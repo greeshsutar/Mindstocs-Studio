@@ -3,6 +3,9 @@ import { Inter } from 'next/font/google';
 import '@/styles/globals.css';
 import '@/styles/typography.css';
 import '@/styles/animations.css';
+import AssistantButton from '@/components/assistant/AssistantButton';
+import FounderPopup from '@/components/layout/FounderPopup';
+import SmoothScroll from '@/components/layout/SmoothScroll';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -55,9 +58,6 @@ export const metadata: Metadata = {
   },
 };
 
-import AssistantButton from '@/components/assistant/AssistantButton';
-import SmoothScroll from '@/components/layout/SmoothScroll';
-
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={inter.variable}>
@@ -66,6 +66,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           Skip to main content
         </a>
         <SmoothScroll>{children}</SmoothScroll>
+        <FounderPopup />
         <AssistantButton />
       </body>
     </html>

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { company } from '@/data/company';
 import { services } from '@/data/services';
 import { mainNavItems } from '@/data/navigation';
+import Logo from './Logo';
 import '@/styles/components/footer.css';
 
 export default function Footer() {
@@ -12,9 +13,7 @@ export default function Footer() {
           {/* Brand Column */}
           <div className="footer__brand">
             <Link href="/" className="footer__logo" aria-label="MindStocs Studio — Home">
-              <span className="footer__logo-text">
-                MIND<span>STOCS</span>
-              </span>
+              <Logo height={42} />
             </Link>
             <p className="footer__tagline">Technology. Products. Growth.</p>
             <p className="footer__description">

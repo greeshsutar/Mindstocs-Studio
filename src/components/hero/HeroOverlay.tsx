@@ -13,7 +13,7 @@ export default function HeroOverlay() {
           <span className="eyebrow hero-overlay__eyebrow">MINDSTOCS STUDIO</span>
           <p className="label hero-overlay__label">SOFTWARE • PRODUCTS • DIGITAL GROWTH</p>
           <h1 className="display hero-overlay__title">
-            BUILD WHAT YOUR BUSINESS NEEDS NEXT.
+            BUILD WHAT <span className="text-gradient-gold">YOUR BUSINESS NEEDS NEXT.</span>
           </h1>
           <p className="hero-overlay__description">
             We design and develop software, SaaS products, trading systems and digital growth

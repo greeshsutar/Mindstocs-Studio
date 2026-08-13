@@ -4,13 +4,30 @@ import { useState, useEffect, useRef } from 'react';
 import '@/styles/components/sections.css';
 
 const steps = [
-  { number: '01', title: 'DISCOVER', description: 'Understand the business, users and objectives.' },
-  { number: '02', title: 'DEFINE', description: 'Translate requirements into a clear solution.' },
-  { number: '03', title: 'DESIGN', description: 'Create the experience and system structure.' },
-  { number: '04', title: 'BUILD', description: 'Develop and integrate.' },
-  { number: '05', title: 'VALIDATE', description: 'Test, review and refine.' },
-  { number: '06', title: 'LAUNCH', description: 'Deploy to production.' },
-  { number: '07', title: 'IMPROVE', description: 'Measure, optimize and evolve.' },
+  {
+    number: '01',
+    title: 'DISCOVER',
+    subtitle: 'Strategic Foundation',
+    description: 'Understand the business, technical requirements, target audience, and core growth objectives.',
+  },
+  {
+    number: '02',
+    title: 'DESIGN',
+    subtitle: 'System Architecture',
+    description: 'Translate requirements into scalable software architecture, database schemas, and refined UX.',
+  },
+  {
+    number: '03',
+    title: 'BUILD',
+    subtitle: 'Precision Engineering',
+    description: 'Production-grade software development, automated testing, and seamless API integrations.',
+  },
+  {
+    number: '04',
+    title: 'GROW',
+    subtitle: 'Continuous Evolution',
+    description: 'Deployment to production, performance monitoring, technical SEO, and continuous optimization.',
+  },
 ];
 
 export default function Process() {
@@ -21,43 +38,41 @@ export default function Process() {
     const section = sectionRef.current;
     if (!section) return;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const stepElements = section.querySelectorAll('[data-step-index]');
-            stepElements.forEach((el) => {
-              const stepObserver = new IntersectionObserver(
-                ([stepEntry]) => {
-                  if (stepEntry.isIntersecting) {
-                    const idx = parseInt(el.getAttribute('data-step-index') || '0');
-                    setActiveIndex((prev) => Math.max(prev, idx));
-                  }
-                },
-                { threshold: 0.5 }
-              );
-              stepObserver.observe(el);
-            });
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
+    const stepElements = section.querySelectorAll('[data-step-index]');
+    const stepObservers: IntersectionObserver[] = [];
 
-    observer.observe(section);
-    return () => observer.disconnect();
+    stepElements.forEach((el) => {
+      const idx = parseInt(el.getAttribute('data-step-index') || '0', 10);
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) {
+            setActiveIndex((prev) => Math.max(prev, idx));
+          }
+        },
+        { threshold: 0.6 }
+      );
+      observer.observe(el);
+      stepObservers.push(observer);
+    });
+
+    return () => {
+      stepObservers.forEach((obs) => obs.disconnect());
+    };
   }, []);
 
-  const progressHeight = ((activeIndex + 1) / steps.length) * 100;
+  const progressHeight = Math.min(100, Math.max(15, ((activeIndex + 1) / steps.length) * 100));
 
   return (
     <section className="section" aria-labelledby="process-heading" ref={sectionRef}>
       <div className="container container--narrow">
-        <div className="section-heading">
+        <div className="section-heading section-heading--center">
           <span className="section-heading__eyebrow">How We Work</span>
           <h2 className="section-heading__title" id="process-heading">
             FROM REQUIREMENT TO REAL-WORLD PRODUCT.
           </h2>
+          <p className="section-heading__description">
+            Our systematic engineering process ensures production-grade execution at every phase.
+          </p>
         </div>
 
         <div className="process-timeline">
@@ -79,6 +94,7 @@ export default function Process() {
                 <span className="process-step__number">{step.number}</span>
               </div>
               <div className="process-step__content">
+                <span className="process-step__subtitle">{step.subtitle}</span>
                 <h3 className="process-step__title">{step.title}</h3>
                 <p className="process-step__description">{step.description}</p>
               </div>

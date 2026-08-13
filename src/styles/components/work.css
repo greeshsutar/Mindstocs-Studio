@@ -140,6 +140,7 @@
 }
 
 .project-card {
+  position: relative;
   background-color: var(--color-surface);
   border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-lg);
@@ -150,6 +151,7 @@
   transition: transform var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base);
   text-decoration: none;
   color: inherit;
+  overflow: hidden;
 }
 
 .project-card:hover {

@@ -1,0 +1,157 @@
+/* ============================================================
+   TECHNOLOGY MARQUEE SECTION STYLES
+   ============================================================ */
+
+.tech-section {
+  padding-block: var(--space-16);
+  background-color: var(--color-bg);
+  overflow: hidden;
+  position: relative;
+}
+
+.tech-section__header {
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--space-6);
+  margin-bottom: var(--space-12);
+}
+
+.tech-marquee-wrapper {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  overflow: hidden;
+  position: relative;
+  mask-image: linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%);
+  padding-block: var(--space-2);
+}
+
+.tech-marquee-track {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  width: max-content;
+  padding-inline: var(--space-3);
+}
+
+.tech-marquee-track--left {
+  animation: marqueeLeft 40s linear infinite;
+}
+
+.tech-marquee-track--right {
+  animation: marqueeRight 40s linear infinite;
+}
+
+.tech-marquee-wrapper:hover .tech-marquee-track {
+  animation-play-state: paused;
+}
+
+@keyframes marqueeLeft {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes marqueeRight {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* Big Marquee Card Styling */
+.tech-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-6);
+  min-width: 260px;
+  padding: var(--space-6) var(--space-8);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-xl);
+  transition: transform var(--transition-base), border-color var(--transition-base), background-color var(--transition-base), box-shadow var(--transition-base);
+  cursor: default;
+  white-space: nowrap;
+}
+
+.tech-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--color-gold-muted);
+  background-color: var(--color-gold-glow);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(201, 168, 76, 0.15);
+}
+
+.tech-card__info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.tech-card__category {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-wider);
+  color: var(--color-gold);
+  text-transform: uppercase;
+}
+
+.tech-card__name {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.tech-card__icon-wrapper {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  transition: background-color var(--transition-base), border-color var(--transition-base);
+  flex-shrink: 0;
+}
+
+.tech-card:hover .tech-card__icon-wrapper {
+  background-color: rgba(201, 168, 76, 0.1);
+  border-color: var(--color-gold-muted);
+}
+
+.tech-card__icon {
+  width: 28px;
+  height: 28px;
+  fill: currentColor;
+  color: var(--color-text-secondary);
+  transition: color var(--transition-base), transform var(--transition-base);
+}
+
+.tech-card:hover .tech-card__icon {
+  color: var(--color-gold);
+  transform: scale(1.1);
+}
+
+/* Reduced motion preference support */
+@media (prefers-reduced-motion: reduce) {
+  .tech-marquee-track {
+    animation: none;
+  }
+  .tech-marquee-wrapper {
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .tech-marquee-wrapper::-webkit-scrollbar {
+    display: none;
+  }
+}

@@ -101,6 +101,34 @@
   color: var(--color-gold);
 }
 
+/* Actions Container & Login Button */
+.header__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.header__login-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 14px;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-wide);
+  color: var(--color-text-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.header__login-btn:hover {
+  color: var(--color-gold);
+  border-color: rgba(201, 168, 76, 0.4);
+  background-color: rgba(201, 168, 76, 0.08);
+}
+
 /* CTA */
 .header__cta {
   display: inline-flex;

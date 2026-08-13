@@ -1,17 +1,16 @@
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import Hero from '@/components/hero/Hero';
-import TechMarquee from '@/components/sections/TechMarquee';
 import BusinessIntro from '@/components/sections/BusinessIntro';
 import CoreServices from '@/components/sections/CoreServices';
+import Technology from '@/components/sections/Technology';
 import ProblemSelector from '@/components/sections/ProblemSelector';
-import SelectedWork from '@/components/sections/SelectedWork';
 import WhyMindstocs from '@/components/sections/WhyMindstocs';
 import Process from '@/components/sections/Process';
-import Technology from '@/components/sections/Technology';
 import FAQ from '@/components/sections/FAQ';
 import ContactCTA from '@/components/sections/ContactCTA';
 import Location from '@/components/sections/Location';
+import AuthFormSection from '@/components/sections/AuthFormSection';
 import JSONLD from '@/components/layout/JSONLD';
 
 export default function Home() {
@@ -23,28 +22,26 @@ export default function Home() {
       <main id="main-content">
         {/* 01 */}
         <Hero />
-        {/* Tech Marquee */}
-        <TechMarquee />
         {/* 02 */}
         <BusinessIntro />
-        {/* 03 */}
+        {/* 03: Six Service Cards */}
         <CoreServices />
-        {/* 04 */}
+        {/* 04: Technology Section directly below Six Cards */}
+        <Technology />
+        {/* 05 */}
         <ProblemSelector />
         {/* 06 */}
-        <SelectedWork />
-        {/* 08 */}
         <WhyMindstocs />
-        {/* 09 */}
+        {/* 07 */}
         <Process />
-        {/* 10 */}
-        <Technology />
-        {/* 13 */}
+        {/* 08 */}
         <FAQ />
-        {/* 14 */}
+        {/* 09 */}
         <ContactCTA />
-        {/* 15 */}
+        {/* 10 */}
         <Location />
+        {/* 11: End-of-page Login / Signup & Project Brief Form */}
+        <AuthFormSection />
       </main>
       <Footer />
     </>

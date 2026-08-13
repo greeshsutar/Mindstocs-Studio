@@ -117,7 +117,6 @@
   }
 }
 
-
 /* ---- Animation Utility Classes ---- */
 
 .animate-fade-in {
@@ -142,6 +141,34 @@
   animation-delay: calc(var(--stagger-index, 0) * 80ms);
 }
 
+/* Metallic Text Gradient Shimmer */
+@keyframes textShimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.text-gradient-gold {
+  background: linear-gradient(
+    135deg,
+    #ffffff 0%,
+    #f0ece4 25%,
+    #d4b85c 55%,
+    #c9a84c 80%,
+    #ffffff 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: textShimmer 6s ease-in-out infinite;
+}
+
 /* Loading shimmer */
 .skeleton {
   background: linear-gradient(
@@ -154,3 +181,18 @@
   animation: shimmer 1.5s ease-in-out infinite;
   border-radius: var(--radius-md);
 }
+
+/* Scroll Reveal Classes */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.scroll-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+

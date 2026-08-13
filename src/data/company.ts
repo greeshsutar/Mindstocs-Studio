@@ -6,6 +6,7 @@ export const company = {
     'MindStocs Studio brings software engineering, product development and digital growth capabilities together under one studio.',
   description:
     'We design and develop software, SaaS products, trading systems and digital growth solutions built around real business requirements.',
+  founder: 'Jackson Fernandes',
 
   address: {
     line1: 'Shop No. 12 & 13, First Floor, Karol Plaza',

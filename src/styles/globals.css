@@ -76,7 +76,7 @@
   --space-20: 5rem;       /* 80px */
   --space-24: 6rem;       /* 96px */
 
-  --section-gap: clamp(4rem, 8vw, 7rem);
+  --section-gap: clamp(2rem, 4vw, 3.5rem);
 
   /* Layout */
   --container-max:    1280px;
@@ -144,6 +144,10 @@ html {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
@@ -312,12 +316,25 @@ input[type="search"]::-webkit-search-cancel-button {
 /* ---- Eyebrow / Label ---- */
 
 .eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-semibold);
   letter-spacing: var(--letter-spacing-widest);
   text-transform: uppercase;
   color: var(--color-gold);
   line-height: 1;
+}
+
+.eyebrow::before {
+  content: '';
+  display: inline-block;
+  width: 14px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--color-gold), transparent);
+  border-radius: 2px;
+  transition: width var(--transition-base);
 }
 
 .label {

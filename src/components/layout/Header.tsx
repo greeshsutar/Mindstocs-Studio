@@ -7,6 +7,8 @@ import { mainNavItems, ctaNav } from '@/data/navigation';
 import { company } from '@/data/company';
 import '@/styles/components/header.css';
 
+import Logo from './Logo';
+
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -57,10 +59,7 @@ export default function Header() {
         <div className="header__inner">
           {/* Logo */}
           <Link href="/" className="header__logo" aria-label="MindStocs Studio — Home">
-            {/* Logo image slot — replace src when logo file is provided */}
-            <span className="header__logo-text">
-              MIND<span>STOCS</span>
-            </span>
+            <Logo height={38} />
           </Link>
 
           {/* Desktop Navigation */}
@@ -98,10 +97,15 @@ export default function Header() {
             })}
           </nav>
 
-          {/* Desktop CTA */}
-          <Link href={ctaNav.href} className="header__cta">
-            {ctaNav.label}
-          </Link>
+          {/* Desktop Actions */}
+          <div className="header__actions">
+            <Link href="/#auth-form-section" className="header__login-btn">
+              LOGIN / SIGNUP
+            </Link>
+            <Link href={ctaNav.href} className="header__cta">
+              {ctaNav.label}
+            </Link>
+          </div>
 
           {/* Hamburger */}
           <button

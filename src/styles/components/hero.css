@@ -36,17 +36,21 @@
 
 .hero-overlay__eyebrow {
   margin-bottom: var(--space-4);
-  display: block;
+  display: inline-flex;
+  align-items: center;
+  animation: fadeInDown 700ms cubic-bezier(0.16, 1, 0.3, 1) 200ms both;
 }
 
 .hero-overlay__label {
   margin-bottom: var(--space-8);
   display: block;
+  animation: fadeInDown 700ms cubic-bezier(0.16, 1, 0.3, 1) 300ms both;
 }
 
 .hero-overlay__title {
   margin-bottom: var(--space-6);
   max-width: 640px;
+  animation: fadeInUp 850ms cubic-bezier(0.16, 1, 0.3, 1) 400ms both;
 }
 
 .hero-overlay__description {
@@ -55,12 +59,14 @@
   line-height: var(--line-height-body);
   margin-bottom: var(--space-10);
   max-width: 540px;
+  animation: fadeInUp 850ms cubic-bezier(0.16, 1, 0.3, 1) 700ms both;
 }
 
 .hero-overlay__actions {
   display: flex;
   gap: var(--space-4);
   flex-wrap: wrap;
+  animation: fadeInUp 850ms cubic-bezier(0.16, 1, 0.3, 1) 900ms both;
 }
 
 
@@ -91,8 +97,8 @@
 .btn--primary:hover {
   background-color: var(--color-gold-light);
   border-color: var(--color-gold-light);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-gold-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 0 25px rgba(201, 168, 76, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .btn--outline {

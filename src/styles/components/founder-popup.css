@@ -1,0 +1,97 @@
+/* ============================================================
+   MINDSTOCS STUDIO — FOUNDER POPUP UI
+   Positioned at bottom-left to avoid overlapping AI Assistant
+   ============================================================ */
+
+.founder-popup {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  width: 320px;
+  background: rgba(13, 13, 13, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(201, 168, 76, 0.3);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(201, 168, 76, 0.1);
+  padding: var(--space-5);
+  z-index: var(--z-modal);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  overflow: hidden;
+}
+
+.founder-popup__accent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--color-gold) 0%, transparent 100%);
+}
+
+.founder-popup__close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: var(--color-text-tertiary);
+  padding: 4px;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: color var(--transition-fast);
+}
+
+.founder-popup__close:hover {
+  color: var(--color-gold);
+}
+
+.founder-popup__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.founder-popup__badge {
+  font-size: 9px;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-gold);
+  letter-spacing: var(--letter-spacing-wide);
+  background: rgba(201, 168, 76, 0.12);
+  padding: 2px 6px;
+  border-radius: 3px;
+  border: 1px solid rgba(201, 168, 76, 0.25);
+}
+
+.founder-popup__name {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.founder-popup__text {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-body);
+  margin: 0;
+}
+
+.founder-popup__footer {
+  margin-top: var(--space-1);
+}
+
+.founder-popup__btn {
+  font-size: 11px;
+  padding: var(--space-2) var(--space-4);
+  width: 100%;
+  justify-content: center;
+}
+
+@media (max-width: 640px) {
+  .founder-popup {
+    bottom: 90px;
+    left: 16px;
+    right: 16px;
+    width: auto;
+  }
+}

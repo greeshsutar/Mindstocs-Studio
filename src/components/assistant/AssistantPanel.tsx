@@ -3,8 +3,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { X, Send } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { company } from '@/data/company';
 import { assistantKnowledge } from '@/data/assistant-knowledge';
+import { ASSISTANT_ROBOT_VIDEO } from './AssistantButton';
 import '@/styles/components/assistant.css';
 
 interface Message {
@@ -46,6 +48,18 @@ export default function AssistantPanel({ isOpen, onClose }: AssistantPanelProps)
   useEffect(() => {
     scrollToBottom();
   }, [messages, isTyping]);
+
+  // ESC key handler to close assistant panel
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   // Trap focus inside panel when open on mobile/accessibility
   useEffect(() => {
@@ -91,7 +105,6 @@ export default function AssistantPanel({ isOpen, onClose }: AssistantPanelProps)
   };
 
   const handleAction = async (actionText: string) => {
-    // 1. Direct Page Actions / Redirection triggers
     if (actionText.startsWith('Discuss') || actionText === 'Send Project Brief') {
       const mapping: Record<string, string> = {
         'Discuss Software Project': '/contact?service=software-development',
@@ -126,7 +139,6 @@ export default function AssistantPanel({ isOpen, onClose }: AssistantPanelProps)
       return;
     }
 
-    // 2. Otherwise treat it as a user message query
     addMessage('user', actionText);
     await getResponse(actionText);
   };
@@ -173,94 +185,120 @@ export default function AssistantPanel({ isOpen, onClose }: AssistantPanelProps)
   };
 
   return (
-    <div
-      ref={panelRef}
-      className={`assistant-panel ${isOpen ? 'assistant-panel--open' : ''}`}
-      role="dialog"
-      aria-modal="true"
-      aria-label="MindStocs Assistant Chat"
-    >
-      {/* Header */}
-      <div className="assistant-header">
-        <div className="assistant-header__info">
-          <span className="assistant-header__title">MindStocs Assistant</span>
-          <span className="assistant-header__status">Online</span>
-        </div>
-        <button
-          className="assistant-header__close"
-          onClick={onClose}
-          aria-label="Close Chat Assistant"
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          ref={panelRef}
+          className="assistant-panel-motion-wrapper"
+          initial={{ opacity: 0, scale: 0.96, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.96, y: 20 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 25 }}
         >
-          <X size={18} />
-        </button>
-      </div>
-
-      {/* Messages */}
-      <div className="assistant-messages">
-        {messages.map((msg) => (
           <div
-            key={msg.id}
-            className={`assistant-message assistant-message--${msg.sender}`}
+            className="assistant-panel"
+            role="dialog"
+            aria-modal="true"
+            aria-label="MindStocs Assistant Chat"
           >
-            <div className="assistant-message__bubble">{msg.text}</div>
-            <span className="assistant-message__time">{msg.time}</span>
-          </div>
-        ))}
-        {isTyping && (
-          <div className="assistant-typing" aria-label="Assistant is typing">
-            <span className="assistant-typing__dot" />
-            <span className="assistant-typing__dot" />
-            <span className="assistant-typing__dot" />
-          </div>
-        )}
-        <div ref={messagesEndRef} />
-      </div>
-
-      {/* Suggested Actions */}
-      {suggestedActions.length > 0 && (
-        <div className="assistant-actions">
-          {suggestedActions.map((action) => {
-            const isCTA =
-              action.includes('WhatsApp') ||
-              action.includes('Discuss') ||
-              action.includes('Brief') ||
-              action.includes('Team');
-            return (
+            {/* Header with small circular animated WebM video avatar */}
+            <div className="assistant-header">
+              <div className="assistant-header__brand">
+                <div className="assistant-header__avatar">
+                  <video
+                    src={ASSISTANT_ROBOT_VIDEO}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload="auto"
+                    aria-hidden="true"
+                    className="assistant-header__avatar-video"
+                  />
+                </div>
+                <div className="assistant-header__info">
+                  <span className="assistant-header__title">MindStocs Assistant</span>
+                  <span className="assistant-header__status">Online</span>
+                </div>
+              </div>
               <button
-                key={action}
-                className={`assistant-action-btn ${
-                  isCTA ? 'assistant-action-btn--cta' : ''
-                }`}
-                onClick={() => handleAction(action)}
+                className="assistant-header__close"
+                onClick={onClose}
+                aria-label="Close Chat Assistant"
               >
-                {action}
+                <X size={18} />
               </button>
-            );
-          })}
-        </div>
-      )}
+            </div>
 
-      {/* Input */}
-      <form className="assistant-footer" onSubmit={handleSubmit}>
-        <div className="assistant-input-container">
-          <input
-            type="text"
-            className="assistant-input"
-            placeholder="Type your message..."
-            value={inputVal}
-            onChange={(e) => setInputVal(e.target.value)}
-            aria-label="Type message to assistant"
-          />
-          <button
-            type="submit"
-            className="assistant-send"
-            disabled={!inputVal.trim()}
-            aria-label="Send message"
-          >
-            <Send size={16} />
-          </button>
-        </div>
-      </form>
-    </div>
+            {/* Messages */}
+            <div className="assistant-messages">
+              {messages.map((msg) => (
+                <div
+                  key={msg.id}
+                  className={`assistant-message assistant-message--${msg.sender}`}
+                >
+                  <div className="assistant-message__bubble">{msg.text}</div>
+                  <span className="assistant-message__time">{msg.time}</span>
+                </div>
+              ))}
+              {isTyping && (
+                <div className="assistant-typing" aria-label="Assistant is typing">
+                  <span className="assistant-typing__dot" />
+                  <span className="assistant-typing__dot" />
+                  <span className="assistant-typing__dot" />
+                </div>
+              )}
+              <div ref={messagesEndRef} />
+            </div>
+
+            {/* Suggested Actions */}
+            {suggestedActions.length > 0 && (
+              <div className="assistant-actions">
+                {suggestedActions.map((action) => {
+                  const isCTA =
+                    action.includes('WhatsApp') ||
+                    action.includes('Discuss') ||
+                    action.includes('Brief') ||
+                    action.includes('Team');
+                  return (
+                    <button
+                      key={action}
+                      className={`assistant-action-btn ${
+                        isCTA ? 'assistant-action-btn--cta' : ''
+                      }`}
+                      onClick={() => handleAction(action)}
+                    >
+                      {action}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Input */}
+            <form className="assistant-footer" onSubmit={handleSubmit}>
+              <div className="assistant-input-container">
+                <input
+                  type="text"
+                  className="assistant-input"
+                  placeholder="Type your message..."
+                  value={inputVal}
+                  onChange={(e) => setInputVal(e.target.value)}
+                  aria-label="Type message to assistant"
+                />
+                <button
+                  type="submit"
+                  className="assistant-send"
+                  disabled={!inputVal.trim()}
+                  aria-label="Send message"
+                >
+                  <Send size={16} />
+                </button>
+              </div>
+            </form>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
