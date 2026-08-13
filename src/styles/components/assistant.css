@@ -1,0 +1,343 @@
+/* ============================================================
+   MINDSTOCS ASSISTANT — CHATBOT UI
+   ============================================================ */
+
+.assistant-trigger {
+  position: fixed;
+  bottom: var(--space-6);
+  right: var(--space-6);
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: var(--color-bg-elevated);
+  border: 1px solid var(--color-gold-dim);
+  color: var(--color-gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-lg), var(--shadow-gold);
+  z-index: var(--z-overlay);
+  transition: transform var(--transition-spring), background-color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.assistant-trigger:hover {
+  transform: scale(1.05);
+  background-color: var(--color-surface);
+  border-color: var(--color-gold);
+  box-shadow: var(--shadow-lg), var(--shadow-gold-hover);
+}
+
+.assistant-trigger:active {
+  transform: scale(0.95);
+}
+
+/* Chat Panel */
+.assistant-panel {
+  position: fixed;
+  bottom: calc(var(--space-6) + 72px);
+  right: var(--space-6);
+  width: 380px;
+  height: min(600px, 80vh);
+  background-color: rgba(16, 16, 16, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg), var(--shadow-gold);
+  z-index: var(--z-modal);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: opacity var(--transition-base), transform var(--transition-spring), visibility var(--transition-base);
+  opacity: 0;
+  transform: translateY(20px) scale(0.95);
+  visibility: hidden;
+}
+
+.assistant-panel--open {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  visibility: visible;
+}
+
+/* Header */
+.assistant-header {
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: rgba(10, 10, 10, 0.5);
+}
+
+.assistant-header__info {
+  display: flex;
+  flex-direction: column;
+}
+
+.assistant-header__title {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  line-height: 1.2;
+}
+
+.assistant-header__status {
+  font-size: var(--font-size-xs);
+  color: var(--color-gold);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.assistant-header__status::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  background-color: var(--color-gold);
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: 0 0 8px var(--color-gold);
+}
+
+.assistant-header__close {
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  padding: var(--space-1);
+  border-radius: var(--radius-sm);
+  transition: color var(--transition-fast), background-color var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.assistant-header__close:hover {
+  color: var(--color-text-primary);
+  background-color: var(--color-surface-hover);
+}
+
+/* Messages area */
+.assistant-messages {
+  flex: 1;
+  padding: var(--space-5);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  scroll-behavior: smooth;
+}
+
+/* Scrollbar styles for messages */
+.assistant-messages::-webkit-scrollbar {
+  width: 4px;
+}
+
+.assistant-messages::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.assistant-messages::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+/* Message Bubble */
+.assistant-message {
+  display: flex;
+  flex-direction: column;
+  max-width: 85%;
+}
+
+.assistant-message--assistant {
+  align-self: flex-start;
+}
+
+.assistant-message--user {
+  align-self: flex-end;
+}
+
+.assistant-message__bubble {
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-body);
+  border-radius: var(--radius-md);
+}
+
+.assistant-message--assistant .assistant-message__bubble {
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+  border-top-left-radius: 0;
+  border: 1px solid var(--color-border-subtle);
+}
+
+.assistant-message--user .assistant-message__bubble {
+  background-color: var(--color-gold-glow);
+  color: var(--color-gold-light);
+  border: 1px solid rgba(201, 168, 76, 0.2);
+  border-top-right-radius: 0;
+}
+
+.assistant-message__time {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+  margin-top: var(--space-1);
+  margin-inline-start: var(--space-1);
+}
+
+.assistant-message--user .assistant-message__time {
+  align-self: flex-end;
+  margin-inline-start: 0;
+  margin-inline-end: var(--space-1);
+}
+
+/* Typing indicator */
+.assistant-typing {
+  display: flex;
+  gap: var(--space-1);
+  padding: var(--space-3) var(--space-4);
+  background-color: var(--color-surface);
+  border-radius: var(--radius-md);
+  border-top-left-radius: 0;
+  width: fit-content;
+  border: 1px solid var(--color-border-subtle);
+}
+
+.assistant-typing__dot {
+  width: 6px;
+  height: 6px;
+  background-color: var(--color-text-secondary);
+  border-radius: 50%;
+  animation: pulse 1.4s infinite ease-in-out both;
+}
+
+.assistant-typing__dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.assistant-typing__dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+/* Quick Actions / Actions Drawer */
+.assistant-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  padding: 0 var(--space-5) var(--space-3);
+  background-color: transparent;
+}
+
+.assistant-action-btn {
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  background-color: rgba(22, 22, 22, 0.4);
+}
+
+.assistant-action-btn:hover {
+  border-color: var(--color-gold-dim);
+  color: var(--color-gold);
+  background-color: var(--color-surface);
+}
+
+.assistant-action-btn--cta {
+  border-color: var(--color-gold);
+  color: var(--color-text-inverse);
+  background-color: var(--color-gold);
+}
+
+.assistant-action-btn--cta:hover {
+  background-color: var(--color-gold-light);
+  border-color: var(--color-gold-light);
+  color: var(--color-text-inverse);
+}
+
+/* Footer / Input */
+.assistant-footer {
+  padding: var(--space-4) var(--space-5);
+  border-top: 1px solid var(--color-border);
+  background-color: rgba(10, 10, 10, 0.5);
+}
+
+.assistant-input-container {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.assistant-input {
+  flex: 1;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.assistant-input:focus {
+  border-color: var(--color-gold);
+}
+
+.assistant-input::placeholder {
+  color: var(--color-text-tertiary);
+}
+
+.assistant-send {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-md);
+  background-color: var(--color-gold-glow);
+  border: 1px solid rgba(201, 168, 76, 0.2);
+  color: var(--color-gold-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.assistant-send:hover:not(:disabled) {
+  background-color: var(--color-gold);
+  color: var(--color-text-inverse);
+  border-color: var(--color-gold);
+}
+
+.assistant-send:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+
+/* Responsive Constraints */
+@media (max-width: 480px) {
+  .assistant-trigger {
+    bottom: var(--space-4);
+    right: var(--space-4);
+  }
+
+  .assistant-panel {
+    bottom: 0;
+    right: 0;
+    width: 100vw;
+    height: 100dvh;
+    border-radius: 0;
+    border: none;
+  }
+
+  .assistant-header {
+    padding-top: max(var(--space-4), env(safe-area-inset-top));
+  }
+
+  .assistant-footer {
+    padding-bottom: max(var(--space-4), env(safe-area-inset-bottom));
+  }
+}

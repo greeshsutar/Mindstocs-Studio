@@ -1,0 +1,211 @@
+/* ============================================================
+   HERO SECTION
+   ============================================================ */
+
+.hero {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  background-color: var(--color-bg);
+}
+
+/* Text overlay */
+.hero-overlay {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  padding-top: calc(var(--nav-height) + var(--space-16));
+  padding-bottom: var(--space-16);
+  pointer-events: none;
+}
+
+.hero-overlay a,
+.hero-overlay button,
+.hero-overlay input,
+.hero-overlay select,
+.hero-overlay textarea {
+  pointer-events: auto;
+}
+
+.hero-overlay__content {
+  max-width: 720px;
+}
+
+.hero-overlay__eyebrow {
+  margin-bottom: var(--space-4);
+  display: block;
+}
+
+.hero-overlay__label {
+  margin-bottom: var(--space-8);
+  display: block;
+}
+
+.hero-overlay__title {
+  margin-bottom: var(--space-6);
+  max-width: 640px;
+}
+
+.hero-overlay__description {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-body);
+  margin-bottom: var(--space-10);
+  max-width: 540px;
+}
+
+.hero-overlay__actions {
+  display: flex;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+
+/* ---- Buttons ---- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-8);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-wider);
+  text-transform: uppercase;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.btn--primary {
+  background-color: var(--color-gold);
+  color: var(--color-text-inverse);
+  border: 1px solid var(--color-gold);
+}
+
+.btn--primary:hover {
+  background-color: var(--color-gold-light);
+  border-color: var(--color-gold-light);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-gold-hover);
+}
+
+.btn--outline {
+  background: transparent;
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+}
+
+.btn--outline:hover {
+  border-color: var(--color-gold-muted);
+  color: var(--color-gold);
+  transform: translateY(-1px);
+}
+
+.btn--ghost {
+  background: transparent;
+  color: var(--color-gold);
+  border: none;
+  padding: var(--space-2) var(--space-4);
+}
+
+.btn--ghost:hover {
+  color: var(--color-gold-light);
+}
+
+.btn--sm {
+  padding: var(--space-2) var(--space-6);
+  font-size: var(--font-size-xs);
+}
+
+.btn--lg {
+  padding: var(--space-5) var(--space-10);
+  font-size: var(--font-size-sm);
+}
+
+
+/* ---- Fallback ---- */
+.hero-fallback {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.hero-fallback__glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  pointer-events: none;
+}
+
+.hero-fallback__glow--1 {
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(201, 168, 76, 0.12) 0%, transparent 70%);
+  top: 50%;
+  left: 60%;
+  transform: translate(-50%, -50%);
+}
+
+.hero-fallback__glow--2 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(201, 168, 76, 0.06) 0%, transparent 70%);
+  top: 30%;
+  left: 30%;
+  transform: translate(-50%, -50%);
+}
+
+.hero-fallback__dots {
+  position: absolute;
+  inset: 0;
+}
+
+.hero-fallback__dot {
+  position: absolute;
+  border-radius: 50%;
+  background-color: var(--color-gold);
+  animation: pulse 3s ease-in-out infinite;
+}
+
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero {
+    min-height: 90vh;
+    min-height: 90dvh;
+  }
+
+  .hero-overlay {
+    padding-top: calc(var(--nav-height) + var(--space-10));
+  }
+
+  .hero-overlay__title {
+    font-size: clamp(1.75rem, 7vw, 2.5rem);
+  }
+
+  .hero-overlay__description {
+    font-size: var(--font-size-base);
+  }
+
+  .hero-overlay__actions {
+    flex-direction: column;
+  }
+
+  .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-overlay__content {
+    padding-right: 0;
+  }
+}

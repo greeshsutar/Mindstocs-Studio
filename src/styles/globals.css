@@ -1,0 +1,355 @@
+/* ============================================================
+   MINDSTOCS STUDIO — DESIGN SYSTEM
+   Global tokens, resets, and utilities
+   ============================================================ */
+
+/* ---- Design Tokens ---- */
+:root {
+  /* Colors — Core palette */
+  --color-bg:              #0a0a0a;
+  --color-bg-elevated:     #111111;
+  --color-surface:         #161616;
+  --color-surface-hover:   #1c1c1c;
+  --color-border:          #222222;
+  --color-border-subtle:   #1a1a1a;
+
+  /* Colors — Gold accent */
+  --color-gold:            #c9a84c;
+  --color-gold-light:      #d4b85c;
+  --color-gold-muted:      #a08838;
+  --color-gold-dim:        #806e2e;
+  --color-gold-glow:       rgba(201, 168, 76, 0.12);
+  --color-gold-glow-strong: rgba(201, 168, 76, 0.25);
+
+  /* Colors — Text */
+  --color-text-primary:    #f0ece4;
+  --color-text-secondary:  #9a9590;
+  --color-text-tertiary:   #6b6560;
+  --color-text-inverse:    #0a0a0a;
+  --color-white:           #ffffff;
+
+  /* Colors — States */
+  --color-success:         #4caf50;
+  --color-error:           #e53935;
+  --color-warning:         #ff9800;
+
+  /* Typography */
+  --font-primary:          'Inter', system-ui, -apple-system, sans-serif;
+  --font-weight-regular:   400;
+  --font-weight-medium:    500;
+  --font-weight-semibold:  600;
+  --font-weight-bold:      700;
+
+  --font-size-xs:          0.75rem;     /* 12px */
+  --font-size-sm:          0.875rem;    /* 14px */
+  --font-size-base:        1rem;        /* 16px */
+  --font-size-lg:          1.125rem;    /* 18px */
+  --font-size-xl:          1.25rem;     /* 20px */
+  --font-size-2xl:         1.5rem;      /* 24px */
+  --font-size-3xl:         2rem;        /* 32px */
+  --font-size-4xl:         2.5rem;      /* 40px */
+  --font-size-5xl:         3.5rem;      /* 56px */
+  --font-size-hero:        clamp(2.5rem, 5vw, 4.5rem);
+
+  --line-height-tight:     1.15;
+  --line-height-heading:   1.2;
+  --line-height-body:      1.65;
+  --line-height-relaxed:   1.8;
+
+  --letter-spacing-tight:  -0.02em;
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide:   0.05em;
+  --letter-spacing-wider:  0.1em;
+  --letter-spacing-widest: 0.15em;
+
+  /* Spacing */
+  --space-1:  0.25rem;    /* 4px */
+  --space-2:  0.5rem;     /* 8px */
+  --space-3:  0.75rem;    /* 12px */
+  --space-4:  1rem;       /* 16px */
+  --space-5:  1.25rem;    /* 20px */
+  --space-6:  1.5rem;     /* 24px */
+  --space-8:  2rem;       /* 32px */
+  --space-10: 2.5rem;     /* 40px */
+  --space-12: 3rem;       /* 48px */
+  --space-16: 4rem;       /* 64px */
+  --space-20: 5rem;       /* 80px */
+  --space-24: 6rem;       /* 96px */
+
+  --section-gap: clamp(4rem, 8vw, 7rem);
+
+  /* Layout */
+  --container-max:    1280px;
+  --container-narrow: 960px;
+  --container-wide:   1440px;
+  --nav-height:       72px;
+
+  /* Radius */
+  --radius-sm:  4px;
+  --radius-md:  8px;
+  --radius-lg:  12px;
+  --radius-xl:  16px;
+  --radius-2xl: 24px;
+
+  /* Transitions */
+  --transition-fast:   150ms ease;
+  --transition-base:   300ms ease;
+  --transition-slow:   500ms ease;
+  --transition-spring: 500ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Shadows */
+  --shadow-sm:  0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md:  0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg:  0 8px 24px rgba(0, 0, 0, 0.5);
+  --shadow-gold: 0 0 20px rgba(201, 168, 76, 0.1);
+  --shadow-gold-hover: 0 0 30px rgba(201, 168, 76, 0.15);
+
+  /* Z-index scale */
+  --z-base:     1;
+  --z-sticky:   100;
+  --z-overlay:  200;
+  --z-modal:    300;
+  --z-toast:    400;
+  --z-max:      500;
+}
+
+
+/* ---- Modern Reset ---- */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+body {
+  font-family: var(--font-primary);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body);
+  color: var(--color-text-primary);
+  background-color: var(--color-bg);
+  overflow-x: hidden;
+  min-height: 100dvh;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+img {
+  height: auto;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  overflow-wrap: break-word;
+  font-weight: var(--font-weight-bold);
+}
+
+p {
+  overflow-wrap: break-word;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+/* Remove default search input styling */
+input[type="search"]::-webkit-search-decoration,
+input[type="search"]::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+}
+
+
+/* ---- Accessibility ---- */
+
+/* Skip to main content link */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: var(--space-4);
+  z-index: var(--z-max);
+  padding: var(--space-3) var(--space-6);
+  background: var(--color-gold);
+  color: var(--color-text-inverse);
+  font-weight: var(--font-weight-semibold);
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  transition: top var(--transition-fast);
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* Focus styles */
+:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}
+
+/* Remove focus ring on mouse click */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+
+/* ---- Layout Utilities ---- */
+
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--space-6);
+}
+
+.container--narrow {
+  max-width: var(--container-narrow);
+}
+
+.container--wide {
+  max-width: var(--container-wide);
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding-inline: var(--space-4);
+  }
+}
+
+
+/* ---- Section ---- */
+
+.section {
+  padding-block: var(--section-gap);
+  position: relative;
+}
+
+.section--tight {
+  padding-block: calc(var(--section-gap) * 0.6);
+}
+
+.section--flush {
+  padding-block: 0;
+}
+
+
+/* ---- Text Utilities ---- */
+
+.text-gold {
+  color: var(--color-gold);
+}
+
+.text-secondary {
+  color: var(--color-text-secondary);
+}
+
+.text-tertiary {
+  color: var(--color-text-tertiary);
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-uppercase {
+  text-transform: uppercase;
+}
+
+
+/* ---- Eyebrow / Label ---- */
+
+.eyebrow {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-widest);
+  text-transform: uppercase;
+  color: var(--color-gold);
+  line-height: 1;
+}
+
+.label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  line-height: 1;
+}
+
+
+/* ---- Gold Divider ---- */
+
+.divider-gold {
+  width: 48px;
+  height: 2px;
+  background: var(--color-gold);
+  border: none;
+}
+
+
+/* ---- Visually Hidden ---- */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
