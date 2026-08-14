@@ -1,0 +1,245 @@
+/* ============================================================
+   MINDSTOCS STUDIO — OFFLINE OVERLAY
+   Premium connection-lost experience using design tokens.
+   ============================================================ */
+
+/* ── Full-screen backdrop ── */
+.offline-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-max);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+  /* Prevent interaction with content underneath */
+  pointer-events: all;
+}
+
+/* Radial dark vignette */
+.offline-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 70% 60% at 50% 50%, rgba(201, 168, 76, 0.04) 0%, transparent 70%),
+    rgba(10, 10, 10, 0.97);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* ── Center panel ── */
+.offline-panel {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-8);
+  max-width: 420px;
+  width: 100%;
+}
+
+/* ── Animated Icon ── */
+.offline-icon {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  flex-shrink: 0;
+}
+
+.offline-icon__svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* Signal ring pulse */
+@keyframes offlineRingPulse {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  40% {
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+.offline-ring {
+  transform-origin: center;
+  animation: offlineRingPulse 2.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Floating particle drift */
+@keyframes offlineParticleFloat {
+  0%, 100% {
+    transform: translate(0, 0);
+    opacity: 0.3;
+  }
+  33% {
+    transform: translate(3px, -4px);
+    opacity: 0.7;
+  }
+  66% {
+    transform: translate(-2px, 3px);
+    opacity: 0.5;
+  }
+}
+
+.offline-particle {
+  animation: offlineParticleFloat 4s ease-in-out infinite;
+}
+
+/* ── Content ── */
+.offline-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.offline-label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-widest);
+  text-transform: uppercase;
+  color: var(--color-gold);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.offline-label::before {
+  content: '';
+  display: inline-block;
+  width: 14px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--color-gold), transparent);
+  border-radius: 2px;
+}
+
+.offline-label--restored {
+  color: #4caf50;
+}
+
+.offline-label--restored::before {
+  background: linear-gradient(90deg, #4caf50, transparent);
+}
+
+.offline-title {
+  font-size: clamp(1.75rem, 5vw, 2.5rem);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--color-text-primary);
+  line-height: 1.1;
+  margin: 0;
+}
+
+.offline-title--restored {
+  color: #4caf50;
+}
+
+.offline-description {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-body);
+  max-width: 320px;
+  margin: 0;
+}
+
+/* ── Retry button ── */
+.offline-retry {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 11px var(--space-8);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-wider);
+  text-transform: uppercase;
+  color: var(--color-text-inverse);
+  background-color: var(--color-gold);
+  border: 1px solid var(--color-gold);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition:
+    background-color 200ms ease,
+    transform 200ms ease,
+    box-shadow 200ms ease,
+    opacity 200ms ease;
+  margin-top: var(--space-2);
+}
+
+.offline-retry:hover:not(:disabled) {
+  background-color: var(--color-gold-light);
+  border-color: var(--color-gold-light);
+  transform: translateY(-2px);
+  box-shadow: 0 0 24px rgba(201, 168, 76, 0.35), 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.offline-retry:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 3px;
+}
+
+.offline-retry--loading {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Spinner */
+@keyframes offlineSpinnerRotate {
+  to { transform: rotate(360deg); }
+}
+
+.offline-retry__spinner {
+  display: inline-block;
+  width: 13px;
+  height: 13px;
+  border: 2px solid rgba(10, 10, 10, 0.3);
+  border-top-color: #0a0a0a;
+  border-radius: 50%;
+  animation: offlineSpinnerRotate 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+/* ── Footer label ── */
+.offline-footer {
+  font-size: 10px;
+  letter-spacing: var(--letter-spacing-widest);
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+  margin: 0;
+  opacity: 0.6;
+}
+
+/* ── Reduced-motion overrides ── */
+@media (prefers-reduced-motion: reduce) {
+  .offline-ring,
+  .offline-particle,
+  .offline-retry__spinner {
+    animation: none !important;
+  }
+}
+
+/* ── Mobile ── */
+@media (max-width: 480px) {
+  .offline-icon {
+    width: 110px;
+    height: 110px;
+  }
+
+  .offline-panel {
+    gap: var(--space-6);
+  }
+
+  .offline-retry {
+    width: 100%;
+  }
+}

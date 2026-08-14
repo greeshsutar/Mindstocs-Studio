@@ -1,0 +1,214 @@
+/* ============================================================
+   MINDSTOCS STUDIO — GET CONNECTED SECTION
+   ============================================================ */
+
+.get-connected {
+  position: relative;
+  background-color: var(--color-bg);
+}
+
+/* Subtle gold glow behind the card */
+.get-connected::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 60% 40% at 70% 50%, rgba(201, 168, 76, 0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Two-column layout */
+.get-connected__inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-16);
+  align-items: start;
+}
+
+/* ---- LEFT COPY ---- */
+.get-connected__title {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: var(--font-weight-black);
+  letter-spacing: -0.02em;
+  color: var(--color-text-primary);
+  line-height: 1.1;
+  margin-top: var(--space-4);
+  margin-bottom: var(--space-5);
+}
+
+.get-connected__desc {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-body);
+  margin-bottom: var(--space-8);
+}
+
+.get-connected__features {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.get-connected__features li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.get-connected__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-gold);
+  flex-shrink: 0;
+}
+
+/* ---- RIGHT FORM ---- */
+.get-connected__form-wrap {
+  background-color: #111111;
+  border: 1px solid rgba(201, 168, 76, 0.25);
+  border-radius: var(--radius-xl);
+  padding: var(--space-8);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5), 0 0 30px rgba(201, 168, 76, 0.06);
+}
+
+.get-connected__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.get-connected__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+/* Field */
+.gc-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.gc-label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  letter-spacing: 0.02em;
+}
+
+.gc-required {
+  color: var(--color-gold);
+  margin-left: 2px;
+}
+
+/* Input */
+.gc-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.gc-icon {
+  position: absolute;
+  left: 14px;
+  color: var(--color-text-tertiary);
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+.gc-input,
+.gc-select,
+.gc-textarea {
+  width: 100%;
+  background-color: #0D0D0D;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-md);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  outline: none;
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.gc-input {
+  padding: 11px 14px 11px calc(14px + 22px);
+}
+
+.gc-select,
+.gc-textarea {
+  padding: 11px 14px;
+}
+
+.gc-textarea {
+  resize: vertical;
+  min-height: 110px;
+  font-family: inherit;
+  line-height: 1.6;
+}
+
+.gc-input:focus,
+.gc-select:focus,
+.gc-textarea:focus {
+  border-color: rgba(201, 168, 76, 0.6);
+  box-shadow: 0 0 14px rgba(201, 168, 76, 0.15);
+}
+
+.gc-input::placeholder,
+.gc-textarea::placeholder {
+  color: rgba(255, 255, 255, 0.2);
+}
+
+/* Submit */
+.get-connected__submit {
+  width: 100%;
+  justify-content: center;
+  margin-top: var(--space-2);
+}
+
+/* Success */
+.get-connected__success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--space-10) var(--space-6);
+  gap: var(--space-4);
+}
+
+.get-connected__success-icon {
+  color: var(--color-gold);
+}
+
+.get-connected__success-title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+}
+
+.get-connected__success-desc {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  max-width: 340px;
+  line-height: var(--line-height-body);
+}
+
+/* ---- RESPONSIVE ---- */
+@media (max-width: 900px) {
+  .get-connected__inner {
+    grid-template-columns: 1fr;
+    gap: var(--space-10);
+  }
+
+  .get-connected__form-wrap {
+    padding: var(--space-6);
+  }
+
+  .get-connected__row {
+    grid-template-columns: 1fr;
+  }
+}

@@ -99,8 +99,8 @@ export default function Header() {
 
           {/* Desktop Actions */}
           <div className="header__actions">
-            <Link href="/#auth-form-section" className="header__login-btn">
-              LOGIN / SIGNUP
+            <Link href="/#get-connected" className="header__login-btn">
+              GET CONNECTED
             </Link>
             <Link href={ctaNav.href} className="header__cta">
               {ctaNav.label}

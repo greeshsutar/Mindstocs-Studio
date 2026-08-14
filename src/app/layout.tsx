@@ -6,6 +6,7 @@ import '@/styles/animations.css';
 import AssistantButton from '@/components/assistant/AssistantButton';
 import FounderPopup from '@/components/layout/FounderPopup';
 import SmoothScroll from '@/components/layout/SmoothScroll';
+import OfflineOverlay from '@/components/system/OfflineOverlay';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -68,6 +69,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <SmoothScroll>{children}</SmoothScroll>
         <FounderPopup />
         <AssistantButton />
+        <OfflineOverlay />
       </body>
     </html>
   );

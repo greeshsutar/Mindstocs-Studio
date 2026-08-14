@@ -10,7 +10,7 @@ import Process from '@/components/sections/Process';
 import FAQ from '@/components/sections/FAQ';
 import ContactCTA from '@/components/sections/ContactCTA';
 import Location from '@/components/sections/Location';
-import AuthFormSection from '@/components/sections/AuthFormSection';
+import GetConnected from '@/components/sections/GetConnected';
 import JSONLD from '@/components/layout/JSONLD';
 
 export default function Home() {
@@ -26,7 +26,7 @@ export default function Home() {
         <BusinessIntro />
         {/* 03: Six Service Cards */}
         <CoreServices />
-        {/* 04: Technology Section directly below Six Cards */}
+        {/* 04: Technology Stack directly below six cards */}
         <Technology />
         {/* 05 */}
         <ProblemSelector />
@@ -40,8 +40,8 @@ export default function Home() {
         <ContactCTA />
         {/* 10 */}
         <Location />
-        {/* 11: End-of-page Login / Signup & Project Brief Form */}
-        <AuthFormSection />
+        {/* 11: Get Connected — Contact Form */}
+        <GetConnected />
       </main>
       <Footer />
     </>

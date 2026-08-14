@@ -62,12 +62,6 @@ const row2Items: TechItem[] = [
     svgPath: 'M12 0s-5.63 7.84-5.63 12.7c0 3.73 2.14 7.02 5.63 8.8 3.49-1.78 5.63-5.07 5.63-8.8C17.63 7.84 12 0 12 0zm.45 19.85v-7.1h1.74v7.1c-1.12.38-1.74 0-1.74 0z',
   },
   {
-    name: 'AWS',
-    category: 'Cloud & Deployment',
-    viewBox: '0 0 24 24',
-    svgPath: 'M12 2L2 7v10l10 5 10-5V7L12 2zm6.7 14.5l-6.7 3.3-6.7-3.3V9.2l6.7-3.3 6.7 3.3v7.3z',
-  },
-  {
     name: 'Vercel',
     category: 'Cloud & Deployment',
     viewBox: '0 0 24 24',

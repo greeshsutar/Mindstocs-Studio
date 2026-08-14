@@ -158,8 +158,8 @@ export default function ParticleSphere({
     smoothPointer.current.lerp(targetPointer.current, 0.05);
 
     // 2. Parallax rotation overlaying autonomous rotation
-    const autonomousRotationY = time * 0.065;
-    const autonomousRotationX = Math.sin(time * 0.035) * 0.07;
+    const autonomousRotationY = time * 0.105;
+    const autonomousRotationX = Math.sin(time * 0.056) * 0.07;
 
     const parallaxX = smoothPointer.current.y * 0.12;
     const parallaxY = smoothPointer.current.x * 0.12;
