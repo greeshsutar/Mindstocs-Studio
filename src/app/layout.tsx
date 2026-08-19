@@ -7,6 +7,7 @@ import AssistantButton from '@/components/assistant/AssistantButton';
 import FounderPopup from '@/components/layout/FounderPopup';
 import SmoothScroll from '@/components/layout/SmoothScroll';
 import OfflineOverlay from '@/components/system/OfflineOverlay';
+import GlobalBackgroundDots from '@/components/layout/GlobalBackgroundDots';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -66,6 +67,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <a href="#main-content" className="skip-link">
           Skip to main content
         </a>
+        <GlobalBackgroundDots />
         <SmoothScroll>{children}</SmoothScroll>
         <FounderPopup />
         <AssistantButton />

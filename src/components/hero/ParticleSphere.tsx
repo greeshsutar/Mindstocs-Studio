@@ -298,10 +298,10 @@ export default function ParticleSphere({
         </bufferGeometry>
         <pointsMaterial
           vertexColors
-          size={0.028}
+          size={0.040}
           sizeAttenuation
           transparent
-          opacity={0.85}
+          opacity={0.88}
           depthWrite={false}
           blending={THREE.AdditiveBlending}
         />

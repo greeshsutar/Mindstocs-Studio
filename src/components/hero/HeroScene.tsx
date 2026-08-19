@@ -52,8 +52,6 @@ export default function HeroScene({ reducedMotion }: HeroSceneProps) {
         inset: 0,
         top: 'var(--nav-height)',
         zIndex: 0,
-        maskImage: 'linear-gradient(to right, transparent 0%, black 18%, black 100%)',
-        WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 18%, black 100%)',
       }}
     >
       {/* Subtle background golden glow behind the sphere */}
@@ -80,6 +78,7 @@ export default function HeroScene({ reducedMotion }: HeroSceneProps) {
         style={{ background: 'transparent' }}
       >
         <Suspense fallback={<LoadingFallback />}>
+          {/* Main 3D particle sphere */}
           <ParticleSphere
             count={particleCount}
             radius={sphereRadius}

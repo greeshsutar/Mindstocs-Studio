@@ -18,8 +18,8 @@ export default function HeroFallback() {
               top: `${Math.random() * 100}%`,
               opacity: 0.15 + Math.random() * 0.35,
               animationDelay: `${Math.random() * 3}s`,
-              width: `${1 + Math.random() * 2}px`,
-              height: `${1 + Math.random() * 2}px`,
+              width: `${1.5 + Math.random() * 2.5}px`,
+              height: `${1.5 + Math.random() * 2.5}px`,
             }}
           />
         ))}

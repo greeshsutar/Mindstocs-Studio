@@ -9,7 +9,7 @@
   display: flex;
   align-items: center;
   overflow: hidden;
-  background-color: var(--color-bg);
+  background-color: transparent;
 }
 
 /* Text overlay */
