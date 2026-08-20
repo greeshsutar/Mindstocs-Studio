@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { EnquiryService } from '@/../backend/services/enquiry.service';
 
-// Simple input sanitization
 function sanitize(input: string): string {
   return input
     .replace(/[<>]/g, '')
@@ -15,7 +15,9 @@ function isValidEmail(email: string): boolean {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, company, email, phone, service, description, timeline, budget } = body;
+    const { name, company, email, phone, service, description, message, timeline, budget } = body;
+
+    const projectMessage = message || description;
 
     // Server-side validation
     const errors: string[] = [];
@@ -28,39 +30,38 @@ export async function POST(request: NextRequest) {
       errors.push('A valid email address is required.');
     }
 
-    if (!description || typeof description !== 'string' || description.trim().length < 10) {
-      errors.push('Project description is required (minimum 10 characters).');
+    if (!projectMessage || typeof projectMessage !== 'string' || projectMessage.trim().length < 5) {
+      errors.push('Project description or message is required.');
     }
 
     if (errors.length > 0) {
       return NextResponse.json({ success: false, errors }, { status: 400 });
     }
 
-    // Sanitize all fields
-    const sanitizedData = {
+    // Save to Database and trigger both confirmation & admin alert emails
+    const enquiry = await EnquiryService.submitEnquiry({
       name: sanitize(name),
       company: sanitize(company || ''),
       email: sanitize(email),
       phone: sanitize(phone || ''),
       service: sanitize(service || ''),
-      description: sanitize(description),
+      message: sanitize(projectMessage),
       timeline: sanitize(timeline || ''),
       budget: sanitize(budget || ''),
-      submittedAt: new Date().toISOString(),
-    };
+    });
 
-    // TODO: Plug in email provider here (Resend, Nodemailer, webhook, etc.)
-    // For now, log the submission (visible in server console during development)
-    console.log('[Contact Form Submission]', sanitizedData);
+    console.log('[Contact API] Saved enquiry and dispatched emails:', enquiry.id);
 
     return NextResponse.json({
       success: true,
-      message: 'Project brief received.',
+      message: 'Project brief received. Confirmation email sent.',
+      data: enquiry,
     });
-  } catch {
+  } catch (error: any) {
+    console.error('[Contact API Error]', error);
     return NextResponse.json(
-      { success: false, errors: ['Invalid request.'] },
-      { status: 400 }
+      { success: false, errors: [error.message || 'Failed to process enquiry.'] },
+      { status: 500 }
     );
   }
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { User, Mail, Building, MessageSquare, Send, CheckCircle2, Phone } from 'lucide-react';
+import { User, Mail, Building, MessageSquare, Send, CheckCircle2, Phone, AlertCircle, Loader2 } from 'lucide-react';
 import '@/styles/components/get-connected.css';
 
 export default function GetConnected() {
@@ -14,16 +14,44 @@ export default function GetConnected() {
     message: '',
   });
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    if (errorMsg) setErrorMsg('');
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    if (!formData.name || !formData.email || !formData.message) {
+      setErrorMsg('Please fill in all required fields (Name, Email, and Message).');
+      return;
+    }
+
+    setLoading(true);
+    setErrorMsg('');
+
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setSubmitted(true);
+      } else {
+        setErrorMsg(data.errors?.[0] || data.message || 'Failed to submit enquiry. Please try again.');
+      }
+    } catch {
+      setErrorMsg('Network error. Please check your connection and try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -55,7 +83,7 @@ export default function GetConnected() {
                 <CheckCircle2 size={52} className="get-connected__success-icon" />
                 <h3 className="get-connected__success-title">Message Received!</h3>
                 <p className="get-connected__success-desc">
-                  Thank you for reaching out. Our team will review your enquiry and contact you shortly.
+                  Thank you for reaching out. A confirmation email has been sent to your inbox. Our team will review your enquiry and contact you shortly.
                 </p>
                 <button
                   className="btn btn--outline btn--sm"
@@ -180,8 +208,22 @@ export default function GetConnected() {
                   />
                 </div>
 
-                <button type="submit" className="btn btn--primary get-connected__submit">
-                  SEND MESSAGE <Send size={14} />
+                {errorMsg && (
+                  <div style={{ color: '#ef4444', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '12px' }}>
+                    <AlertCircle size={16} /> {errorMsg}
+                  </div>
+                )}
+
+                <button type="submit" className="btn btn--primary get-connected__submit" disabled={loading}>
+                  {loading ? (
+                    <>
+                      SENDING... <Loader2 size={14} className="animate-spin" />
+                    </>
+                  ) : (
+                    <>
+                      SEND MESSAGE <Send size={14} />
+                    </>
+                  )}
                 </button>
               </form>
             )}

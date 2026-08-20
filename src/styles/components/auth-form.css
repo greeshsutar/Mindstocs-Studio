@@ -186,6 +186,67 @@
   color: var(--color-text-secondary);
   max-width: 380px;
   line-height: var(--line-height-body);
+/* OTP Verification Styles */
+.auth-otp-wrap {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-2);
+  margin: var(--space-4) 0;
+}
+
+.auth-otp-input {
+  width: 46px;
+  height: 56px;
+  text-align: center;
+  font-size: 24px;
+  font-weight: 700;
+  font-family: monospace;
+  background-color: #0A0A0A;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-md);
+  color: var(--color-gold);
+  outline: none;
+  transition: all var(--transition-fast);
+}
+
+.auth-otp-input:focus {
+  border-color: var(--color-gold);
+  box-shadow: 0 0 16px rgba(201, 168, 76, 0.35);
+  background-color: #141414;
+}
+
+.auth-alert {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-xs);
+  line-height: 1.5;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.auth-alert--error {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #f87171;
+}
+
+.auth-alert--success {
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #34d399;
+}
+
+.auth-badge-timer {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(201, 168, 76, 0.1);
+  border: 1px solid rgba(201, 168, 76, 0.25);
+  color: var(--color-gold);
+  font-size: var(--font-size-xs);
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
 }
 
 @media (max-width: 640px) {
@@ -195,5 +256,11 @@
 
   .auth-card {
     padding: var(--space-6);
+  }
+
+  .auth-otp-input {
+    width: 40px;
+    height: 50px;
+    font-size: 20px;
   }
 }
