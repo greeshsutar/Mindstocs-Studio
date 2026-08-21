@@ -68,12 +68,13 @@
 .footer__link {
   font-size: var(--font-size-sm);
   color: var(--color-text-tertiary);
-  transition: color var(--transition-fast);
+  transition: all 200ms cubic-bezier(0.16, 1, 0.3, 1);
   display: inline-block;
 }
 
 .footer__link:hover {
   color: var(--color-gold);
+  transform: translateX(3px);
 }
 
 /* Bottom */

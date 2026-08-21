@@ -370,3 +370,150 @@ input[type="search"]::-webkit-search-cancel-button {
   white-space: nowrap;
   border-width: 0;
 }
+
+
+/* ============================================================
+   AWARD-WINNING MASTER BUTTON SYSTEM & HOVER INTERACTIONS
+   ============================================================ */
+
+.btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2, 8px);
+  padding: 12px 24px;
+  font-family: var(--font-primary);
+  font-size: var(--font-size-xs, 12px);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: var(--radius-sm, 6px);
+  border: 1px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  line-height: 1;
+  text-decoration: none;
+  overflow: hidden;
+  z-index: 1;
+  transition:
+    transform 240ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 240ms cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 240ms ease,
+    border-color 240ms ease,
+    color 200ms ease;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Radiant Shimmer / Light-Sweep Pseudo Effect */
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 70%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transform: skewX(-25deg);
+  transition: left 600ms ease;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.btn:hover::before {
+  left: 140%;
+}
+
+/* Active Click Feedback (Tactile Depression) */
+.btn:active {
+  transform: translateY(0px) scale(0.975) !important;
+}
+
+/* 1. Primary Gold Luxury Button */
+.btn--primary {
+  background: linear-gradient(135deg, #dfc370 0%, #c9a84c 50%, #b8933b 100%);
+  color: #0a0a0a;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 14px rgba(201, 168, 76, 0.25), 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.btn--primary:hover {
+  background: linear-gradient(135deg, #ebd283 0%, #d4b85c 50%, #c9a84c 100%);
+  color: #050505;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(201, 168, 76, 0.45), 0 2px 6px rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* 2. Outline Frosted Glass Button */
+.btn--outline {
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--color-text-primary, #f0ece4);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.btn--outline:hover {
+  background: rgba(201, 168, 76, 0.08);
+  border-color: rgba(201, 168, 76, 0.5);
+  color: var(--color-gold, #c9a84c);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), 0 0 15px rgba(201, 168, 76, 0.15);
+}
+
+/* 3. Ghost Button */
+.btn--ghost {
+  background: transparent;
+  color: var(--color-gold, #c9a84c);
+  border-color: transparent;
+  padding: 8px 16px;
+}
+
+.btn--ghost:hover {
+  color: var(--color-gold-light, #d4b85c);
+  background: rgba(201, 168, 76, 0.08);
+  transform: translateY(-1px);
+}
+
+/* 4. Sizing Scales */
+.btn--sm {
+  padding: 8px 16px;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+}
+
+.btn--lg {
+  padding: 16px 32px;
+  font-size: 13px;
+  letter-spacing: 0.1em;
+}
+
+.btn--full {
+  width: 100%;
+  justify-content: center;
+}
+
+/* Micro Icon Shifts within Buttons on Hover */
+.btn svg,
+.btn .btn__icon {
+  transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn:hover svg[data-icon="arrow"],
+.btn:hover .lucide-arrow-right,
+.btn:hover .lucide-arrow-up-right,
+.btn:hover .lucide-send {
+  transform: translate(3px, -2px);
+}
+
+.btn:hover .lucide-log-in,
+.btn:hover .lucide-user-plus {
+  transform: scale(1.1);
+}

@@ -23,22 +23,41 @@
 }
 
 .insight-card {
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border-subtle);
+  position: relative;
+  background-color: #141414;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--radius-lg);
   padding: var(--space-6);
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
-  transition: transform var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base);
+  transition: all 280ms cubic-bezier(0.16, 1, 0.3, 1);
   text-decoration: none;
   color: inherit;
+  overflow: hidden;
+}
+
+.insight-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-gold), transparent);
+  opacity: 0;
+  transition: opacity 280ms ease;
 }
 
 .insight-card:hover {
-  transform: translateY(-2px);
-  border-color: var(--color-gold-dim);
-  box-shadow: var(--shadow-gold);
+  transform: translateY(-4px);
+  background-color: #181818;
+  border-color: rgba(201, 168, 76, 0.4);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5), 0 0 20px rgba(201, 168, 76, 0.1);
+}
+
+.insight-card:hover::before {
+  opacity: 1;
 }
 
 .insight-card__meta {
