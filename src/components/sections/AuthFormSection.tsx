@@ -91,6 +91,24 @@ function AuthFormInner({ initialTab = 'login' }: AuthFormSectionProps) {
     }
   };
 
+  const handleOtpPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData('text').trim().replace(/[^0-9]/g, '');
+    if (!pastedData) return;
+
+    const digits = pastedData.slice(0, 6).split('');
+    const newOtp = [...otp];
+    digits.forEach((digit, idx) => {
+      newOtp[idx] = digit;
+    });
+    setOtp(newOtp);
+    if (errorMsg) setErrorMsg('');
+
+    // Focus next empty or last input
+    const nextIndex = Math.min(digits.length, 5);
+    otpInputRefs.current[nextIndex]?.focus();
+  };
+
   // 1. Handle Signup Submission
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -528,19 +546,23 @@ function AuthFormInner({ initialTab = 'login' }: AuthFormSectionProps) {
 
               {/* TAB 3: OTP VERIFICATION */}
               {activeTab === 'otp' && (
-                <form onSubmit={handleVerifyOtp} className="auth-form" style={{ textAlign: 'center' }}>
-                  <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(201, 168, 76, 0.15)', color: 'var(--color-gold)', margin: '0 auto 12px auto' }}>
-                    <KeyRound size={24} />
+                <form onSubmit={handleVerifyOtp} className="auth-form auth-otp-form" style={{ textAlign: 'center' }}>
+                  <div className="auth-otp-header">
+                    <div className="auth-otp-badge-icon">
+                      <KeyRound size={26} />
+                    </div>
+                    <h3 className="auth-otp-title">
+                      Verify Your Email
+                    </h3>
+                    <p className="auth-otp-subtitle">
+                      We sent a 6-digit verification code to
+                      <br />
+                      <strong className="auth-otp-email-tag">{otpEmail}</strong>
+                    </p>
                   </div>
 
-                  <h3 style={{ fontSize: '20px', fontWeight: '700', color: '#fff', margin: '0 0 6px 0' }}>
-                    Verify Your Email
-                  </h3>
-                  <p style={{ fontSize: '13px', color: '#94a3b8', margin: '0 0 16px 0', lineHeight: '1.5' }}>
-                    We sent a 6-digit verification code to <strong style={{ color: '#f1f5f9' }}>{otpEmail}</strong>
-                  </p>
-
-                  <div className="auth-otp-wrap">
+                  {/* 6-Digit OTP Boxes */}
+                  <div className="auth-otp-wrap" onPaste={handleOtpPaste}>
                     {otp.map((digit, idx) => (
                       <input
                         key={idx}
@@ -548,34 +570,38 @@ function AuthFormInner({ initialTab = 'login' }: AuthFormSectionProps) {
                         type="text"
                         maxLength={1}
                         inputMode="numeric"
+                        autoComplete="one-time-code"
                         value={digit}
                         onChange={(e) => handleOtpChange(idx, e.target.value)}
                         onKeyDown={(e) => handleOtpKeyDown(idx, e)}
-                        className="auth-otp-input"
+                        onPaste={handleOtpPaste}
+                        className={`auth-otp-input ${digit ? 'auth-otp-input--filled' : ''}`}
                         required
+                        aria-label={`Digit ${idx + 1}`}
                       />
                     ))}
                   </div>
 
-                  <div style={{ marginBottom: '16px' }}>
+                  <div className="auth-otp-timer-row">
                     <span className="auth-badge-timer">
-                      ⏱️ Expires in: <strong>{formatTime(countdown)}</strong>
+                      <span className="auth-timer-dot" />
+                      Expires in: <strong>{formatTime(countdown)}</strong>
                     </span>
                   </div>
 
                   <button type="submit" className="btn btn--primary auth-submit-btn" disabled={loading || countdown <= 0}>
                     {loading ? (
-                      <>VERIFYING... <Loader2 size={14} className="animate-spin" /></>
+                      <>VERIFYING CODE... <Loader2 size={14} className="animate-spin" /></>
                     ) : (
                       <>VERIFY &amp; ACTIVATE ACCOUNT <ArrowRight size={14} /></>
                     )}
                   </button>
 
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '12px', fontSize: '12px' }}>
+                  <div className="auth-otp-actions">
                     <button
                       type="button"
                       onClick={() => { setActiveTab('signup'); setErrorMsg(''); setSuccessMsg(''); }}
-                      className="auth-link"
+                      className="auth-link auth-otp-link"
                     >
                       &larr; Change Email
                     </button>
@@ -583,10 +609,10 @@ function AuthFormInner({ initialTab = 'login' }: AuthFormSectionProps) {
                       type="button"
                       onClick={handleResendOtp}
                       disabled={loading}
-                      className="auth-link"
+                      className="auth-link auth-otp-link"
                       style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                     >
-                      <RotateCcw size={12} /> Resend Code
+                      <RotateCcw size={13} /> Resend Code
                     </button>
                   </div>
                 </form>
