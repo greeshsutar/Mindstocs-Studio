@@ -80,6 +80,23 @@ export const UserModel = {
     return data;
   },
 
+  async updatePassword(email: string, passwordHash: string): Promise<User> {
+    const { data, error } = await supabase
+      .from('users')
+      .update({
+        password: passwordHash,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('email', email.trim().toLowerCase())
+      .select('id, name, email, is_verified, created_at, updated_at')
+      .single();
+
+    if (error) {
+      throw new Error(`Database error updating password: ${error.message}`);
+    }
+    return data;
+  },
+
   async markVerified(email: string): Promise<User> {
     const { data, error } = await supabase
       .from('users')

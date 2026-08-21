@@ -186,6 +186,187 @@ export const MailService = {
     }
   },
 
+  // 1.1 Send Password Reset OTP Email
+  async sendPasswordResetOTPEmail(to: string, otp: string, userName?: string): Promise<boolean> {
+    const displayName = userName || 'Client';
+    const otpChars = otp.split('');
+
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Reset Your Password</title>
+      </head>
+      <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #040507; color: #e2e8f0; -webkit-font-smoothing: antialiased;">
+        <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #040507; padding: 40px 16px;">
+          <tr>
+            <td align="center">
+              <table width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width: 540px; background: #0c0e14; border-radius: 20px; border: 1px solid #1c2232; box-shadow: 0 25px 60px rgba(0,0,0,0.8); overflow: hidden;">
+                <!-- Glowing Top Gradient Bar -->
+                <tr>
+                  <td height="5" style="background: linear-gradient(90deg, #f59e0b 0%, #ec4899 50%, #8b5cf6 100%);"></td>
+                </tr>
+
+                <!-- Brand Header -->
+                ${getBrandHeader('Password Reset Authorization')}
+
+                <!-- Main Content -->
+                <tr>
+                  <td style="padding: 0 44px 40px 44px; text-align: center;">
+                    <!-- Badge -->
+                    <div style="display: inline-block; background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.3); color: #fbbf24; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; padding: 6px 16px; border-radius: 30px; margin-bottom: 20px;">
+                      🔑 Password Reset OTP
+                    </div>
+
+                    <h1 style="font-size: 24px; font-weight: 800; color: #ffffff; letter-spacing: -0.5px; margin: 0 0 12px 0;">
+                      Reset Your Password
+                    </h1>
+                    <p style="font-size: 14px; line-height: 1.7; color: #94a3b8; margin: 0 0 32px 0;">
+                      Hello <strong style="color: #f1f5f9;">${displayName}</strong>, we received a request to reset your Mindstocs Studio account password. Use the 6-digit verification code below to authorize your password change.
+                    </p>
+
+                    <!-- Segmented OTP Digit Boxes -->
+                    <table border="0" cellspacing="0" cellpadding="0" style="margin: 0 auto 28px auto;">
+                      <tr>
+                        ${otpChars.map((digit) => `
+                          <td style="padding: 0 4px;">
+                            <div style="width: 48px; height: 60px; line-height: 60px; background: linear-gradient(180deg, #151824 0%, #0f121a 100%); border: 1px solid #2d354d; border-radius: 12px; font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; font-size: 28px; font-weight: 800; color: #fbbf24; text-align: center; box-shadow: 0 8px 20px rgba(0,0,0,0.4);">
+                              ${digit}
+                            </div>
+                          </td>
+                        `).join('')}
+                      </tr>
+                    </table>
+
+                    <!-- Expiry Timer Pill -->
+                    <div style="margin-bottom: 32px;">
+                      <table border="0" cellspacing="0" cellpadding="0" style="margin: 0 auto;">
+                        <tr>
+                          <td style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.25); border-radius: 20px; padding: 8px 18px;">
+                            <span style="font-size: 12px; font-weight: 600; color: #f87171; display: inline-flex; align-items: center;">
+                              ⏱️ This code will expire in <strong style="margin-left: 4px; color: #fca5a5;">${config.otp.expiresInMinutes} minutes</strong>
+                            </span>
+                          </td>
+                        </tr>
+                      </table>
+                    </div>
+
+                    <!-- Security Info Box -->
+                    <div style="background: #11141e; border: 1px solid #1e2538; border-radius: 12px; padding: 18px; text-align: left;">
+                      <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                          <td width="24" valign="top" style="font-size: 14px; line-height: 1;">🛡️</td>
+                          <td style="padding-left: 10px; font-size: 12px; color: #64748b; line-height: 1.6;">
+                            If you did not request a password reset, you can safely ignore this email. Your current password will remain unchanged.
+                          </td>
+                        </tr>
+                      </table>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Footer -->
+                ${getBrandFooter()}
+              </table>
+            </td>
+          </tr>
+        </table>
+      </body>
+      </html>
+    `;
+
+    try {
+      const info = await transporter.sendMail({
+        from: config.smtp.from,
+        to,
+        subject: `${otp} is your Mindstocs Studio password reset code`,
+        text: `Your password reset code is ${otp}. It will expire in ${config.otp.expiresInMinutes} minutes.`,
+        html: htmlContent,
+      });
+
+      console.log(`[MailService] Password reset OTP email dispatched to ${to}. MessageId: ${info.messageId}`);
+      return true;
+    } catch (error) {
+      console.error(`[MailService] Error sending password reset OTP email to ${to}:`, error);
+      throw new Error(`Failed to send password reset email: ${(error as Error).message}`);
+    }
+  },
+
+  // 1.2 Send Password Change Notification
+  async sendPasswordResetSuccessEmail(to: string, userName?: string): Promise<boolean> {
+    const displayName = userName || 'Client';
+
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Password Changed Successfully</title>
+      </head>
+      <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #040507; color: #e2e8f0; -webkit-font-smoothing: antialiased;">
+        <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #040507; padding: 40px 16px;">
+          <tr>
+            <td align="center">
+              <table width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width: 540px; background: #0c0e14; border-radius: 20px; border: 1px solid #1c2232; box-shadow: 0 25px 60px rgba(0,0,0,0.8); overflow: hidden;">
+                <!-- Glowing Top Gradient Bar -->
+                <tr>
+                  <td height="5" style="background: linear-gradient(90deg, #10b981 0%, #6366f1 100%);"></td>
+                </tr>
+
+                <!-- Brand Header -->
+                ${getBrandHeader('Security Notification')}
+
+                <!-- Main Content -->
+                <tr>
+                  <td style="padding: 0 44px 40px 44px; text-align: center;">
+                    <!-- Badge -->
+                    <div style="display: inline-block; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.3); color: #34d399; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; padding: 6px 16px; border-radius: 30px; margin-bottom: 20px;">
+                      ✓ Password Updated
+                    </div>
+
+                    <h1 style="font-size: 24px; font-weight: 800; color: #ffffff; letter-spacing: -0.5px; margin: 0 0 12px 0;">
+                      Password Changed Successfully
+                    </h1>
+                    <p style="font-size: 14px; line-height: 1.7; color: #94a3b8; margin: 0 0 24px 0;">
+                      Hello <strong style="color: #f1f5f9;">${displayName}</strong>, your account password has been updated successfully. You can now use your new password to sign in.
+                    </p>
+
+                    <div style="background: #11141e; border: 1px solid #1e2538; border-radius: 12px; padding: 18px; text-align: left;">
+                      <p style="font-size: 12px; color: #64748b; line-height: 1.6; margin: 0;">
+                        If you did not perform this password change, please contact our security team immediately by replying to this email.
+                      </p>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Footer -->
+                ${getBrandFooter()}
+              </table>
+            </td>
+          </tr>
+        </table>
+      </body>
+      </html>
+    `;
+
+    try {
+      await transporter.sendMail({
+        from: config.smtp.from,
+        to,
+        subject: `Your Mindstocs Studio password has been changed`,
+        text: `Hello ${displayName}, your password has been successfully updated.`,
+        html: htmlContent,
+      });
+      return true;
+    } catch (err) {
+      console.error(`[MailService] Error sending password changed notification to ${to}:`, err);
+      return false;
+    }
+  },
+
   // 2. Send Welcome Email upon successful registration
   async sendWelcomeEmail(to: string, userName: string): Promise<boolean> {
     const displayName = userName || 'Partner';

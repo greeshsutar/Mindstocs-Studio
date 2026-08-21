@@ -165,6 +165,40 @@
   text-decoration: underline;
 }
 
+.auth-forgot-link {
+  color: var(--color-gold);
+  font-size: var(--font-size-xs);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: color var(--transition-fast);
+  font-weight: 500;
+}
+
+.auth-forgot-link:hover {
+  color: var(--color-gold-light);
+  text-decoration: underline;
+}
+
+.auth-password-toggle {
+  position: absolute;
+  right: var(--space-3);
+  background: transparent;
+  border: none;
+  color: var(--color-text-tertiary);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--transition-fast);
+}
+
+.auth-password-toggle:hover {
+  color: var(--color-gold);
+}
+
 .auth-submit-btn {
   margin-top: var(--space-2);
   width: 100%;

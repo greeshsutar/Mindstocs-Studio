@@ -15,8 +15,12 @@ export const OTPService = {
     // Store in DB with 5-minute expiry
     await OTPModel.createOTP(email, otp, config.otp.expiresInMinutes, type);
 
-    // Send via email using Nodemailer
-    await MailService.sendOTPEmail(email, otp, userName);
+    // Send via email using Nodemailer based on type
+    if (type === 'password_reset') {
+      await MailService.sendPasswordResetOTPEmail(email, otp, userName);
+    } else {
+      await MailService.sendOTPEmail(email, otp, userName);
+    }
 
     return {
       success: true,

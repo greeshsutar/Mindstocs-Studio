@@ -178,4 +178,83 @@ export const AuthService = {
     }
     return user;
   },
+
+  async forgotPassword(email: string) {
+    const normalizedEmail = email.trim().toLowerCase();
+    const user = await UserModel.findByEmail(normalizedEmail);
+
+    if (!user) {
+      throw new Error('No account found with this email address.');
+    }
+
+    // Send 5-minute password reset OTP
+    await OTPService.createAndSendOTP(normalizedEmail, user.name, 'password_reset');
+
+    return {
+      requiresOtp: true,
+      email: normalizedEmail,
+      message: 'Password reset verification code sent to your email.',
+      expiresInMinutes: config.otp.expiresInMinutes,
+    };
+  },
+
+  async verifyResetOtp(email: string, otp: string) {
+    const normalizedEmail = email.trim().toLowerCase();
+    const user = await UserModel.findByEmail(normalizedEmail);
+
+    if (!user) {
+      throw new Error('User not found.');
+    }
+
+    const isValid = await OTPService.verifyOTP(normalizedEmail, otp, 'password_reset');
+    if (!isValid) {
+      throw new Error('Invalid or expired verification code.');
+    }
+
+    // Generate temporary 15-minute reset token
+    const resetToken = jwt.sign(
+      { email: normalizedEmail, purpose: 'password_reset' },
+      config.jwt.secret,
+      { expiresIn: '15m' }
+    );
+
+    return {
+      success: true,
+      resetToken,
+      email: normalizedEmail,
+      message: 'OTP verified successfully. Please enter your new password.',
+    };
+  },
+
+  async resetPassword(data: { email: string; resetToken: string; newPassword: string }) {
+    const normalizedEmail = data.email.trim().toLowerCase();
+
+    // Verify reset token
+    try {
+      const decoded: any = jwt.verify(data.resetToken, config.jwt.secret);
+      if (decoded.email !== normalizedEmail || decoded.purpose !== 'password_reset') {
+        throw new Error('Invalid password reset token.');
+      }
+    } catch {
+      throw new Error('Password reset session has expired or is invalid. Please request a new code.');
+    }
+
+    const user = await UserModel.findByEmail(normalizedEmail);
+    if (!user) {
+      throw new Error('User account not found.');
+    }
+
+    const passwordHash = await this.hashPassword(data.newPassword);
+    await UserModel.updatePassword(normalizedEmail, passwordHash);
+
+    // Send confirmation email
+    MailService.sendPasswordResetSuccessEmail(normalizedEmail, user.name).catch((err) => {
+      console.error('[AuthService] Failed to send password reset confirmation email:', err);
+    });
+
+    return {
+      success: true,
+      message: 'Password updated successfully! You can now log in with your new password.',
+    };
+  },
 };
