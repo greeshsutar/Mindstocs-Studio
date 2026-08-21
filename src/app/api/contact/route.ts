@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { EnquiryService } from '@/../backend/services/enquiry.service';
+import { getClientIp, checkRateLimit, RateLimitPresets, createRateLimitResponse } from '@/lib/rate-limit';
 
 function sanitize(input: string): string {
   return input
@@ -14,6 +15,18 @@ function isValidEmail(email: string): boolean {
 
 export async function POST(request: NextRequest) {
   try {
+    const clientIp = getClientIp(request);
+    const rateLimit = checkRateLimit(`contact:${clientIp}`, RateLimitPresets.CONTACT_FORM);
+
+    if (!rateLimit.allowed) {
+      return createRateLimitResponse(
+        rateLimit.retryAfterSeconds,
+        rateLimit.limit,
+        rateLimit.remaining,
+        'Too many project briefs submitted. Please wait a few minutes before submitting another brief.'
+      );
+    }
+
     const body = await request.json();
     const { name, company, email, phone, service, description, message, timeline, budget } = body;
 

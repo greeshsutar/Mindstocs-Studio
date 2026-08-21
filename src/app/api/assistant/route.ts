@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { matchAssistantResponse } from '@/data/assistant-knowledge';
+import { getClientIp, checkRateLimit, RateLimitPresets, createRateLimitResponse } from '@/lib/rate-limit';
 
 // Simple input sanitization
 function sanitizeInput(input: string): string {
@@ -11,6 +12,18 @@ function sanitizeInput(input: string): string {
 
 export async function POST(request: NextRequest) {
   try {
+    const clientIp = getClientIp(request);
+    const rateLimit = checkRateLimit(`assistant:${clientIp}`, RateLimitPresets.ASSISTANT_AI);
+
+    if (!rateLimit.allowed) {
+      return createRateLimitResponse(
+        rateLimit.retryAfterSeconds,
+        rateLimit.limit,
+        rateLimit.remaining,
+        'Assistant rate limit reached. Please wait a moment before sending more queries.'
+      );
+    }
+
     const { message } = await request.json();
 
     if (!message || typeof message !== 'string') {
@@ -25,17 +38,13 @@ export async function POST(request: NextRequest) {
     // Default to our secure local rule-based engine to prevent hallucinations
     const matched = matchAssistantResponse(sanitizedMessage);
 
-    // Optional LLM webhook / backend API key check (e.g., if a developer configures it later)
-    // If process.env.OPENAI_API_KEY is present, we could optionally call it for more fluent conversation.
-    // For now, we rely on the strict client rule-base to guarantee accuracy and zero hallucinations.
     console.log(`[Assistant Query]: ${sanitizedMessage} -> Resolved: ${matched.message.slice(0, 50)}...`);
 
     return NextResponse.json({
       message: matched.message,
       suggestedActions: matched.suggestedActions || [],
-      ctaType: matched.ctaType || 'none'
+      ctaType: matched.ctaType || 'none',
     });
-
   } catch (error) {
     console.error('[Assistant API Error]:', error);
     return NextResponse.json(

@@ -1,8 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { AuthService } from '@/../backend/services/auth.service';
+import { getClientIp, checkRateLimit, RateLimitPresets, createRateLimitResponse } from '@/lib/rate-limit';
 
 export async function POST(request: NextRequest) {
   try {
+    const clientIp = getClientIp(request);
+    const rateLimit = checkRateLimit(`signup:${clientIp}`, RateLimitPresets.AUTH_STRICT);
+
+    if (!rateLimit.allowed) {
+      return createRateLimitResponse(
+        rateLimit.retryAfterSeconds,
+        rateLimit.limit,
+        rateLimit.remaining,
+        'Too many signup attempts from this IP. Please try again in a few minutes.'
+      );
+    }
+
     const body = await request.json();
     const { name, email, password } = body;
 

@@ -1,8 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { AuthService } from '@/../backend/services/auth.service';
+import { getClientIp, checkRateLimit, RateLimitPresets, createRateLimitResponse } from '@/lib/rate-limit';
 
 export async function POST(request: NextRequest) {
   try {
+    const clientIp = getClientIp(request);
+    const rateLimit = checkRateLimit(`verify-otp:${clientIp}`, RateLimitPresets.OTP_VERIFY);
+
+    if (!rateLimit.allowed) {
+      return createRateLimitResponse(
+        rateLimit.retryAfterSeconds,
+        rateLimit.limit,
+        rateLimit.remaining,
+        'Too many incorrect OTP attempts. Please wait a few minutes or request a new code.'
+      );
+    }
+
     const body = await request.json();
     const { email, otp } = body;
 
