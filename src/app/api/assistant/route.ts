@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { matchAssistantResponse } from '@/data/assistant-knowledge';
+import { generateRAGResponse } from '@/lib/assistant/rag-engine';
 import { getClientIp, checkRateLimit, RateLimitPresets, createRateLimitResponse } from '@/lib/rate-limit';
 
-// Simple input sanitization
+// Input sanitization
 function sanitizeInput(input: string): string {
   return input
     .replace(/[<>]/g, '')
@@ -35,15 +35,18 @@ export async function POST(request: NextRequest) {
 
     const sanitizedMessage = sanitizeInput(message);
 
-    // Default to our secure local rule-based engine to prevent hallucinations
-    const matched = matchAssistantResponse(sanitizedMessage);
+    // Execute RAG Knowledge Retrieval & Answer Generation Pipeline
+    const ragResult = generateRAGResponse(sanitizedMessage);
 
-    console.log(`[Assistant Query]: ${sanitizedMessage} -> Resolved: ${matched.message.slice(0, 50)}...`);
+    console.log(`[RAG Assistant Query]: "${sanitizedMessage}" -> Found ${ragResult.sources.length} sources (Confidence: ${(ragResult.confidence * 100).toFixed(0)}%)`);
 
     return NextResponse.json({
-      message: matched.message,
-      suggestedActions: matched.suggestedActions || [],
-      ctaType: matched.ctaType || 'none',
+      message: ragResult.answer,
+      sources: ragResult.sources,
+      confidence: ragResult.confidence,
+      suggestedActions: ragResult.suggestedActions || [],
+      cta: ragResult.cta,
+      ctaType: ragResult.cta?.type || 'none',
     });
   } catch (error) {
     console.error('[Assistant API Error]:', error);

@@ -2,10 +2,9 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { X, Send } from 'lucide-react';
+import { X, Send, Sparkles, ExternalLink, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { company } from '@/data/company';
-import { assistantKnowledge } from '@/data/assistant-knowledge';
 import { ASSISTANT_ROBOT_VIDEO } from './AssistantButton';
 import '@/styles/components/assistant.css';
 
@@ -14,6 +13,13 @@ interface Message {
   sender: 'assistant' | 'user';
   text: string;
   time: string;
+  sources?: string[];
+  confidence?: number;
+  cta?: {
+    type: 'contact' | 'whatsapp' | 'portal' | 'none';
+    link: string;
+    text: string;
+  };
 }
 
 interface AssistantPanelProps {
@@ -21,21 +27,30 @@ interface AssistantPanelProps {
   onClose: () => void;
 }
 
+const INITIAL_QUICK_ACTIONS = [
+  'Custom Software',
+  'SaaS Products',
+  'Trading Algorithms',
+  'Growth Marketing',
+  'Technical SEO',
+  '7-Step Process',
+  'Office Location',
+];
+
 export default function AssistantPanel({ isOpen, onClose }: AssistantPanelProps) {
   const router = useRouter();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 'welcome',
       sender: 'assistant',
-      text: assistantKnowledge.welcomeMessage,
+      text: "Hello! I am the MindStocs Studio AI Assistant, powered by our live RAG (Retrieval-Augmented Generation) knowledge engine. I have verified knowledge on our engineering capabilities, trading systems, client projects, and pricing models. What would you like to build or explore?",
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      sources: ['MindStocs Knowledge Engine'],
     },
   ]);
   const [inputVal, setInputVal] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const [suggestedActions, setSuggestedActions] = useState<string[]>(
-    assistantKnowledge.quickActions
-  );
+  const [suggestedActions, setSuggestedActions] = useState<string[]>(INITIAL_QUICK_ACTIONS);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -61,7 +76,7 @@ export default function AssistantPanel({ isOpen, onClose }: AssistantPanelProps)
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
 
-  // Trap focus inside panel when open on mobile/accessibility
+  // Trap focus inside panel when open
   useEffect(() => {
     if (!isOpen) return;
     const panel = panelRef.current;
@@ -94,34 +109,64 @@ export default function AssistantPanel({ isOpen, onClose }: AssistantPanelProps)
     return () => window.removeEventListener('keydown', handleTab);
   }, [isOpen]);
 
-  const addMessage = (sender: 'assistant' | 'user', text: string) => {
+  const addMessage = (
+    sender: 'assistant' | 'user',
+    text: string,
+    sources?: string[],
+    confidence?: number,
+    cta?: Message['cta']
+  ) => {
     const newMessage: Message = {
       id: Math.random().toString(36).substr(2, 9),
       sender,
       text,
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      sources,
+      confidence,
+      cta,
     };
     setMessages((prev) => [...prev, newMessage]);
   };
 
   const handleAction = async (actionText: string) => {
-    if (actionText.startsWith('Discuss') || actionText === 'Send Project Brief') {
-      const mapping: Record<string, string> = {
-        'Discuss Software Project': '/contact?service=software-development',
-        'Discuss SaaS Project': '/contact?service=saas-product-development',
-        'Discuss Trading Project': '/contact?service=trading-algorithm-development',
-        'Discuss Marketing Project': '/contact?service=performance-marketing',
-        'Discuss SEO Project': '/contact?service=seo',
-        'Discuss Content Project': '/contact?service=content-creation',
-        'Send Project Brief': '/contact',
-      };
-      const dest = mapping[actionText] || '/contact';
-      router.push(dest);
+    // 1. Service Discussions
+    const routeMappings: Record<string, string> = {
+      'Custom Software': '/services/software-development',
+      'Discuss Software Development': '/contact?service=software-development',
+      'Discuss Custom Software': '/contact?service=software-development',
+      'Discuss Software Project': '/contact?service=software-development',
+      'SaaS Products': '/services/saas-product-development',
+      'Discuss SaaS Product Development': '/contact?service=saas-product-development',
+      'Discuss SaaS Project': '/contact?service=saas-product-development',
+      'Trading Algorithms': '/services/trading-algorithm-development',
+      'Discuss Trading Algorithm Engineering': '/contact?service=trading-algorithm-development',
+      'Discuss Trading Project': '/contact?service=trading-algorithm-development',
+      'Growth Marketing': '/services/performance-marketing',
+      'Discuss Performance Marketing': '/contact?service=performance-marketing',
+      'Discuss Marketing Project': '/contact?service=performance-marketing',
+      'Technical SEO': '/services/seo',
+      'Discuss Technical SEO & Growth': '/contact?service=seo',
+      'Discuss SEO Project': '/contact?service=seo',
+      'Content Creation': '/services/content-creation',
+      'Discuss Content Creation': '/contact?service=content-creation',
+      'Discuss Content Project': '/contact?service=content-creation',
+      'Send Project Brief': '/contact',
+      'Our Process': '/process',
+      '7-Step Process': '/process',
+      'View All Work': '/work',
+      'Explore Services': '/services',
+      'Client Login': '/login',
+      'Create Account': '/signup',
+      'Access Client Portal': '/portal',
+    };
+
+    if (routeMappings[actionText]) {
+      router.push(routeMappings[actionText]);
       onClose();
       return;
     }
 
-    if (actionText === 'Talk to the Team (WhatsApp)' || actionText === 'Talk to Team') {
+    if (actionText === 'Talk to the Team (WhatsApp)' || actionText === 'Talk to Team' || actionText === 'Chat on WhatsApp') {
       window.open(company.whatsapp.link, '_blank');
       return;
     }
@@ -131,11 +176,12 @@ export default function AssistantPanel({ isOpen, onClose }: AssistantPanelProps)
         {
           id: 'welcome',
           sender: 'assistant',
-          text: assistantKnowledge.welcomeMessage,
+          text: "Hello! I am the MindStocs Studio AI Assistant, powered by our live RAG knowledge engine. What would you like to explore?",
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          sources: ['MindStocs Knowledge Engine'],
         },
       ]);
-      setSuggestedActions(assistantKnowledge.quickActions);
+      setSuggestedActions(INITIAL_QUICK_ACTIONS);
       return;
     }
 
@@ -157,8 +203,8 @@ export default function AssistantPanel({ isOpen, onClose }: AssistantPanelProps)
       if (response.ok) {
         const data = await response.json();
         setIsTyping(false);
-        addMessage('assistant', data.message);
-        if (data.suggestedActions) {
+        addMessage('assistant', data.message, data.sources, data.confidence, data.cta);
+        if (data.suggestedActions && data.suggestedActions.length > 0) {
           setSuggestedActions(data.suggestedActions);
         }
       } else {
@@ -168,9 +214,10 @@ export default function AssistantPanel({ isOpen, onClose }: AssistantPanelProps)
       setIsTyping(false);
       addMessage(
         'assistant',
-        "Sorry, I'm experiencing some connectivity issues right now. You can reach the team directly on WhatsApp."
+        "I'm temporarily experiencing connectivity issues with the knowledge base. You can connect with our team directly on WhatsApp anytime.",
+        ['Offline Fallback']
       );
-      setSuggestedActions(['Talk to the Team (WhatsApp)', 'Start Over']);
+      setSuggestedActions(['Talk to the Team (WhatsApp)', 'Send Project Brief', 'Start Over']);
     }
   };
 
@@ -199,9 +246,9 @@ export default function AssistantPanel({ isOpen, onClose }: AssistantPanelProps)
             className="assistant-panel"
             role="dialog"
             aria-modal="true"
-            aria-label="MindStocs Assistant Chat"
+            aria-label="MindStocs RAG Assistant Chat"
           >
-            {/* Header with small circular animated WebM video avatar */}
+            {/* Header */}
             <div className="assistant-header">
               <div className="assistant-header__brand">
                 <div className="assistant-header__avatar">
@@ -217,8 +264,13 @@ export default function AssistantPanel({ isOpen, onClose }: AssistantPanelProps)
                   />
                 </div>
                 <div className="assistant-header__info">
-                  <span className="assistant-header__title">MindStocs Assistant</span>
-                  <span className="assistant-header__status">Online</span>
+                  <div className="assistant-header__title-row">
+                    <span className="assistant-header__title">MindStocs Assistant</span>
+                    <span className="assistant-rag-badge">
+                      <Sparkles size={10} /> RAG
+                    </span>
+                  </div>
+                  <span className="assistant-header__status">Knowledge Engine Online</span>
                 </div>
               </div>
               <button
@@ -237,12 +289,54 @@ export default function AssistantPanel({ isOpen, onClose }: AssistantPanelProps)
                   key={msg.id}
                   className={`assistant-message assistant-message--${msg.sender}`}
                 >
-                  <div className="assistant-message__bubble">{msg.text}</div>
+                  <div className="assistant-message__bubble">
+                    <div className="assistant-message__text" style={{ whiteSpace: 'pre-line' }}>
+                      {msg.text}
+                    </div>
+
+                    {/* Sources Badge */}
+                    {msg.sources && msg.sources.length > 0 && (
+                      <div className="assistant-message__sources">
+                        {msg.sources.map((src, sIdx) => (
+                          <span key={sIdx} className="assistant-source-tag">
+                            ✦ {src}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Inline CTA Button */}
+                    {msg.cta && msg.cta.link && (
+                      <div className="assistant-message__cta-wrap">
+                        {msg.cta.type === 'whatsapp' ? (
+                          <a
+                            href={msg.cta.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="assistant-bubble-cta assistant-bubble-cta--whatsapp"
+                          >
+                            {msg.cta.text} <ExternalLink size={12} />
+                          </a>
+                        ) : (
+                          <button
+                            onClick={() => {
+                              router.push(msg.cta!.link);
+                              onClose();
+                            }}
+                            className="assistant-bubble-cta"
+                          >
+                            {msg.cta.text} <ArrowRight size={12} />
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
                   <span className="assistant-message__time">{msg.time}</span>
                 </div>
               ))}
+
               {isTyping && (
-                <div className="assistant-typing" aria-label="Assistant is typing">
+                <div className="assistant-typing" aria-label="Assistant is retrieving knowledge">
                   <span className="assistant-typing__dot" />
                   <span className="assistant-typing__dot" />
                   <span className="assistant-typing__dot" />
@@ -275,13 +369,13 @@ export default function AssistantPanel({ isOpen, onClose }: AssistantPanelProps)
               </div>
             )}
 
-            {/* Input */}
+            {/* Footer Input */}
             <form className="assistant-footer" onSubmit={handleSubmit}>
               <div className="assistant-input-container">
                 <input
                   type="text"
                   className="assistant-input"
-                  placeholder="Type your message..."
+                  placeholder="Ask about software, trading, SaaS, pricing..."
                   value={inputVal}
                   onChange={(e) => setInputVal(e.target.value)}
                   aria-label="Type message to assistant"
