@@ -203,6 +203,7 @@ const STOP_WORDS = new Set([
   'how', 'i', 'in', 'is', 'it', 'of', 'on', 'or', 'that', 'the', 'this',
   'to', 'was', 'what', 'when', 'where', 'who', 'will', 'with', 'you', 'your',
   'can', 'do', 'does', 'tell', 'me', 'please', 'we', 'they', 'our', 'give',
+  'wt', 'wht', 'ur', 'u', 'whats', "what's", 'whos', "who's", 'name',
 ]);
 
 function tokenize(text: string): string[] {
@@ -222,26 +223,29 @@ function scoreChunk(queryTokens: string[], rawQuery: string, chunk: KnowledgeChu
   const chunkTokens = tokenize(chunkText);
   const chunkTokenSet = new Set(chunkTokens);
 
+  const cleanRawQuery = rawQuery.toLowerCase().trim();
+
   // Exact phrase match bonus
-  if (chunkText.includes(rawQuery.toLowerCase().trim())) {
+  if (cleanRawQuery.length >= 4 && chunkText.includes(cleanRawQuery)) {
     score += 15.0;
   }
 
-  // Keyword exact matches
+  // Keyword exact matches (only for meaningful keywords >= 3 characters)
   for (const kw of chunk.keywords) {
-    if (rawQuery.toLowerCase().includes(kw)) {
+    if (kw.length >= 3 && cleanRawQuery.includes(kw)) {
       score += 8.0;
     }
   }
 
   // Term frequency overlap
   for (const token of queryTokens) {
-    if (chunkTokenSet.has(token)) {
-      score += 3.0;
-    }
-    // Substring token match
-    if (chunkText.includes(token)) {
-      score += 1.5;
+    if (token.length >= 3) {
+      if (chunkTokenSet.has(token)) {
+        score += 4.0;
+      }
+      if (chunkText.includes(token)) {
+        score += 1.5;
+      }
     }
   }
 
@@ -429,6 +433,56 @@ export async function generateRAGResponse(query: string): Promise<RAGResponse> {
         type: 'contact',
         link: '/contact',
         text: 'Discuss Your Project',
+      },
+    };
+  }
+
+  // 1.1 Identity & Name Queries
+  if (
+    /^(wt|what|wht|tell me|who)\s*(is|are|r)?\s*(your|ur)?\s*(name|identity|you)\b/i.test(normalized) ||
+    /^(who are you|who r u|whats your name|what is your name|wt is your name|your name)\b/i.test(normalized)
+  ) {
+    return {
+      answer:
+        "I am the MindStocs Studio AI Assistant — an intelligent neural assistant engineered to answer questions about our digital engineering services, SaaS development, algorithmic trading systems, performance marketing, and pricing models. How can I assist you with your project today?",
+      confidence: 1.0,
+      sources: ['MindStocs Assistant Identity'],
+      suggestedActions: [
+        'Custom Software',
+        'SaaS Products',
+        'Trading Algorithms',
+        'Send Project Brief',
+        'Talk to Team',
+      ],
+      cta: {
+        type: 'contact',
+        link: '/contact',
+        text: 'Start a Project',
+      },
+    };
+  }
+
+  // 1.2 Founder & Leadership Queries
+  if (
+    /(who (is|are) (the )?(founder|ceo|owner|creator)|who created (you|mindstocs)|who made you|jackson fernandes)/i.test(
+      normalized
+    )
+  ) {
+    return {
+      answer:
+        `MindStocs Studio was founded by ${company.founder}. We are a software and digital agency based in Sawantwadi, Maharashtra, delivering custom software, SaaS products, quantitative trading workflows, and growth marketing.`,
+      confidence: 1.0,
+      sources: ['Company Profile & Leadership'],
+      suggestedActions: [
+        'Our Process',
+        'Office Location',
+        'Explore Services',
+        'Talk to Team (WhatsApp)',
+      ],
+      cta: {
+        type: 'whatsapp',
+        link: company.whatsapp.link,
+        text: 'Connect on WhatsApp',
       },
     };
   }
