@@ -3,12 +3,13 @@ import { config } from '../config/env';
 
 // Initialize Nodemailer Transporter
 const transporter = nodemailer.createTransport({
-  host: config.smtp.host,
-  port: config.smtp.port,
-  secure: config.smtp.secure,
+  service: 'gmail',
   auth: {
     user: config.smtp.user,
     pass: config.smtp.pass,
+  },
+  tls: {
+    rejectUnauthorized: false,
   },
 });
 
