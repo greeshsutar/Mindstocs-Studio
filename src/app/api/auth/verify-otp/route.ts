@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { AuthService } from '@/../backend/services/auth.service';
 import { getClientIp, checkRateLimit, RateLimitPresets, createRateLimitResponse } from '@/lib/rate-limit';
+import { isValidEmail, isValidOTP } from '@/lib/validation';
 
 export async function POST(request: NextRequest) {
   try {
@@ -19,14 +20,21 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { email, otp } = body;
 
-    if (!email || !otp) {
+    if (!isValidEmail(email)) {
       return NextResponse.json(
-        { success: false, message: 'Email and 6-digit OTP are required.' },
+        { success: false, message: 'Please provide a valid email address.' },
         { status: 400 }
       );
     }
 
-    const result = await AuthService.verifyOtpAndActivate(email, otp);
+    if (!isValidOTP(otp)) {
+      return NextResponse.json(
+        { success: false, message: 'Please provide a valid 6-digit numeric verification code.' },
+        { status: 400 }
+      );
+    }
+
+    const result = await AuthService.verifyOtpAndActivate(email.trim().toLowerCase(), String(otp).trim());
 
     return NextResponse.json({
       success: true,

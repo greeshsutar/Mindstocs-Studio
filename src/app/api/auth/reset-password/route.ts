@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { AuthService } from '@/../backend/services/auth.service';
 import { getClientIp, checkRateLimit, RateLimitPresets, createRateLimitResponse } from '@/lib/rate-limit';
+import { isValidEmail, isValidPassword } from '@/lib/validation';
 
 export async function POST(request: NextRequest) {
   try {
@@ -19,23 +20,31 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { email, resetToken, newPassword } = body;
 
-    if (!email || !resetToken || !newPassword) {
+    if (!isValidEmail(email)) {
       return NextResponse.json(
-        { success: false, message: 'Email, reset token, and new password are required.' },
+        { success: false, message: 'Please provide a valid email address.' },
         { status: 400 }
       );
     }
 
-    if (newPassword.length < 6) {
+    if (!resetToken || typeof resetToken !== 'string' || resetToken.trim().length === 0) {
       return NextResponse.json(
-        { success: false, message: 'Password must be at least 6 characters.' },
+        { success: false, message: 'Valid password reset authorization token is required.' },
+        { status: 400 }
+      );
+    }
+
+    const passValidation = isValidPassword(newPassword);
+    if (!passValidation.valid) {
+      return NextResponse.json(
+        { success: false, message: passValidation.message },
         { status: 400 }
       );
     }
 
     const result = await AuthService.resetPassword({
-      email,
-      resetToken,
+      email: email.trim().toLowerCase(),
+      resetToken: resetToken.trim(),
       newPassword,
     });
 

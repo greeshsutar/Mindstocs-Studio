@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { AuthService } from '@/../backend/services/auth.service';
 import { getClientIp, checkRateLimit, RateLimitPresets, createRateLimitResponse } from '@/lib/rate-limit';
+import { isValidEmail } from '@/lib/validation';
 
 export async function POST(request: NextRequest) {
   try {
@@ -19,14 +20,24 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { email, password } = body;
 
-    if (!email || !password) {
+    if (!isValidEmail(email)) {
       return NextResponse.json(
-        { success: false, message: 'Email and password are required.' },
+        { success: false, message: 'Please provide a valid email address.' },
         { status: 400 }
       );
     }
 
-    const result = await AuthService.login({ email, password });
+    if (!password || typeof password !== 'string' || password.length === 0) {
+      return NextResponse.json(
+        { success: false, message: 'Password is required.' },
+        { status: 400 }
+      );
+    }
+
+    const result = await AuthService.login({
+      email: email.trim().toLowerCase(),
+      password,
+    });
 
     return NextResponse.json({
       success: true,

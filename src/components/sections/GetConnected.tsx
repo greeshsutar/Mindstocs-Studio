@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { User, Mail, Building, MessageSquare, Send, CheckCircle2, Phone, AlertCircle, Loader2 } from 'lucide-react';
+import { isValidEmail, isValidName, isValidPhone } from '@/lib/validation';
 import '@/styles/components/get-connected.css';
 
 export default function GetConnected() {
@@ -26,8 +27,24 @@ export default function GetConnected() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.email || !formData.message) {
-      setErrorMsg('Please fill in all required fields (Name, Email, and Message).');
+    const nameVal = isValidName(formData.name);
+    if (!nameVal.valid) {
+      setErrorMsg(nameVal.message || 'Please provide your name.');
+      return;
+    }
+
+    if (!isValidEmail(formData.email)) {
+      setErrorMsg('Please enter a valid work email address.');
+      return;
+    }
+
+    if (formData.phone && !isValidPhone(formData.phone)) {
+      setErrorMsg('Please enter a valid phone number or leave it blank.');
+      return;
+    }
+
+    if (!formData.message || formData.message.trim().length < 5) {
+      setErrorMsg('Please provide your project message (minimum 5 characters).');
       return;
     }
 
@@ -38,7 +55,14 @@ export default function GetConnected() {
       const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          name: formData.name.trim(),
+          email: formData.email.trim().toLowerCase(),
+          phone: formData.phone.trim(),
+          company: formData.company.trim(),
+          service: formData.service,
+          message: formData.message.trim(),
+        }),
       });
 
       const data = await res.json();

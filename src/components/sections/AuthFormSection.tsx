@@ -19,6 +19,7 @@ import {
   ShieldCheck,
   Key,
 } from 'lucide-react';
+import { isValidEmail, isValidPassword, isValidName, isValidOTP } from '@/lib/validation';
 import '@/styles/components/auth-form.css';
 
 type FormTab = 'login' | 'signup' | 'inquiry' | 'otp' | 'forgot-password';
@@ -143,8 +144,20 @@ function AuthFormInner({ initialTab = 'login' }: AuthFormSectionProps) {
   // 1. Handle Signup Submission
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.email || !formData.password) {
-      setErrorMsg('Please enter your name, email, and password.');
+    const nameVal = isValidName(formData.name);
+    if (!nameVal.valid) {
+      setErrorMsg(nameVal.message || 'Please provide your full name.');
+      return;
+    }
+
+    if (!isValidEmail(formData.email)) {
+      setErrorMsg('Please enter a valid work email address.');
+      return;
+    }
+
+    const passVal = isValidPassword(formData.password);
+    if (!passVal.valid) {
+      setErrorMsg(passVal.message || 'Password must be at least 6 characters.');
       return;
     }
 
@@ -156,8 +169,8 @@ function AuthFormInner({ initialTab = 'login' }: AuthFormSectionProps) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
+          name: formData.name.trim(),
+          email: formData.email.trim().toLowerCase(),
           password: formData.password,
         }),
       });
@@ -165,7 +178,7 @@ function AuthFormInner({ initialTab = 'login' }: AuthFormSectionProps) {
       const data = await res.json();
 
       if (res.ok && data.success) {
-        setOtpEmail(formData.email);
+        setOtpEmail(formData.email.trim().toLowerCase());
         setCountdown(300);
         setOtp(['', '', '', '', '', '']);
         setActiveTab('otp');
@@ -183,9 +196,9 @@ function AuthFormInner({ initialTab = 'login' }: AuthFormSectionProps) {
   // 2. Handle Signup OTP Verification
   const handleVerifyOtp = async (e: React.FormEvent) => {
     e.preventDefault();
-    const otpCode = otp.join('');
-    if (otpCode.length !== 6) {
-      setErrorMsg('Please enter all 6 digits of the verification code.');
+    const otpCode = otp.join('').trim();
+    if (!isValidOTP(otpCode)) {
+      setErrorMsg('Please enter all 6 numeric digits of the verification code.');
       return;
     }
 
@@ -197,7 +210,7 @@ function AuthFormInner({ initialTab = 'login' }: AuthFormSectionProps) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          email: otpEmail,
+          email: otpEmail.trim().toLowerCase(),
           otp: otpCode,
         }),
       });
@@ -223,6 +236,11 @@ function AuthFormInner({ initialTab = 'login' }: AuthFormSectionProps) {
   // 3. Handle Resend OTP (Signup)
   const handleResendOtp = async () => {
     if (loading) return;
+    if (!isValidEmail(otpEmail)) {
+      setErrorMsg('Invalid email address to resend OTP.');
+      return;
+    }
+
     setLoading(true);
     setErrorMsg('');
 
@@ -230,7 +248,7 @@ function AuthFormInner({ initialTab = 'login' }: AuthFormSectionProps) {
       const res = await fetch('/api/auth/resend-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: otpEmail }),
+        body: JSON.stringify({ email: otpEmail.trim().toLowerCase() }),
       });
 
       const data = await res.json();
@@ -252,8 +270,13 @@ function AuthFormInner({ initialTab = 'login' }: AuthFormSectionProps) {
   // 4. Handle Login Submission
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.email || !formData.password) {
-      setErrorMsg('Please enter your email and password.');
+    if (!isValidEmail(formData.email)) {
+      setErrorMsg('Please enter a valid work email address.');
+      return;
+    }
+
+    if (!formData.password) {
+      setErrorMsg('Please enter your password.');
       return;
     }
 
@@ -265,7 +288,7 @@ function AuthFormInner({ initialTab = 'login' }: AuthFormSectionProps) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          email: formData.email,
+          email: formData.email.trim().toLowerCase(),
           password: formData.password,
         }),
       });
@@ -298,8 +321,8 @@ function AuthFormInner({ initialTab = 'login' }: AuthFormSectionProps) {
   // 5. Handle Forgot Password Step 1 (Request OTP)
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!forgotEmail) {
-      setErrorMsg('Please enter your work email.');
+    if (!isValidEmail(forgotEmail)) {
+      setErrorMsg('Please enter a valid work email address.');
       return;
     }
 
@@ -310,7 +333,7 @@ function AuthFormInner({ initialTab = 'login' }: AuthFormSectionProps) {
       const res = await fetch('/api/auth/forgot-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: forgotEmail }),
+        body: JSON.stringify({ email: forgotEmail.trim().toLowerCase() }),
       });
 
       const data = await res.json();
@@ -333,9 +356,9 @@ function AuthFormInner({ initialTab = 'login' }: AuthFormSectionProps) {
   // 6. Handle Forgot Password Step 2 (Verify Reset OTP)
   const handleVerifyForgotOtp = async (e: React.FormEvent) => {
     e.preventDefault();
-    const otpCode = otp.join('');
-    if (otpCode.length !== 6) {
-      setErrorMsg('Please enter all 6 digits of the reset code.');
+    const otpCode = otp.join('').trim();
+    if (!isValidOTP(otpCode)) {
+      setErrorMsg('Please enter all 6 numeric digits of the reset code.');
       return;
     }
 
@@ -347,7 +370,7 @@ function AuthFormInner({ initialTab = 'login' }: AuthFormSectionProps) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          email: forgotEmail,
+          email: forgotEmail.trim().toLowerCase(),
           otp: otpCode,
         }),
       });
@@ -359,7 +382,7 @@ function AuthFormInner({ initialTab = 'login' }: AuthFormSectionProps) {
         setForgotStep(3);
         setSuccessMsg('Code verified! Please create your new password.');
       } else {
-        setErrorMsg(data.message || 'Invalid or expired verification code.');
+        setErrorMsg(data.message || 'Invalid or expired reset code.');
       }
     } catch {
       setErrorMsg('Connection error. Please try again.');
@@ -400,13 +423,9 @@ function AuthFormInner({ initialTab = 'login' }: AuthFormSectionProps) {
   // 8. Handle Forgot Password Step 3 (Set New & Confirm Password)
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newPassword || !confirmPassword) {
-      setErrorMsg('Please enter and confirm your new password.');
-      return;
-    }
-
-    if (newPassword.length < 6) {
-      setErrorMsg('Password must be at least 6 characters.');
+    const passVal = isValidPassword(newPassword);
+    if (!passVal.valid) {
+      setErrorMsg(passVal.message || 'Password must be at least 6 characters.');
       return;
     }
 
@@ -423,7 +442,7 @@ function AuthFormInner({ initialTab = 'login' }: AuthFormSectionProps) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          email: forgotEmail,
+          email: forgotEmail.trim().toLowerCase(),
           resetToken,
           newPassword,
         }),
@@ -451,8 +470,19 @@ function AuthFormInner({ initialTab = 'login' }: AuthFormSectionProps) {
   // 9. Handle Project Brief / Enquiry
   const handleInquiry = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.email || !formData.message) {
-      setErrorMsg('Please provide your name, email, and project details.');
+    const nameVal = isValidName(formData.name);
+    if (!nameVal.valid) {
+      setErrorMsg(nameVal.message || 'Please provide your name.');
+      return;
+    }
+
+    if (!isValidEmail(formData.email)) {
+      setErrorMsg('Please enter a valid work email address.');
+      return;
+    }
+
+    if (!formData.message || formData.message.trim().length < 5) {
+      setErrorMsg('Please provide your project requirements (minimum 5 characters).');
       return;
     }
 
@@ -464,12 +494,12 @@ function AuthFormInner({ initialTab = 'login' }: AuthFormSectionProps) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: formData.name,
-          company: formData.companyName,
-          email: formData.email,
+          name: formData.name.trim(),
+          company: formData.companyName.trim(),
+          email: formData.email.trim().toLowerCase(),
           service: formData.service,
           budget: formData.budget,
-          message: formData.message,
+          message: formData.message.trim(),
         }),
       });
 

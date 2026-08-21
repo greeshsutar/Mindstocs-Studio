@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { AuthService } from '@/../backend/services/auth.service';
 import { getClientIp, checkRateLimit, RateLimitPresets, createRateLimitResponse } from '@/lib/rate-limit';
+import { isValidEmail, isValidPassword, isValidName, sanitize } from '@/lib/validation';
 
 export async function POST(request: NextRequest) {
   try {
@@ -19,21 +20,34 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { name, email, password } = body;
 
-    if (!name || !email || !password) {
+    const nameValidation = isValidName(name);
+    if (!nameValidation.valid) {
       return NextResponse.json(
-        { success: false, message: 'Name, email, and password are required.' },
+        { success: false, message: nameValidation.message },
         { status: 400 }
       );
     }
 
-    if (password.length < 6) {
+    if (!isValidEmail(email)) {
       return NextResponse.json(
-        { success: false, message: 'Password must be at least 6 characters.' },
+        { success: false, message: 'Please provide a valid email address.' },
         { status: 400 }
       );
     }
 
-    const result = await AuthService.signup({ name, email, password });
+    const passValidation = isValidPassword(password);
+    if (!passValidation.valid) {
+      return NextResponse.json(
+        { success: false, message: passValidation.message },
+        { status: 400 }
+      );
+    }
+
+    const result = await AuthService.signup({
+      name: sanitize(name, 80),
+      email: email.trim().toLowerCase(),
+      password,
+    });
 
     return NextResponse.json({
       success: true,
