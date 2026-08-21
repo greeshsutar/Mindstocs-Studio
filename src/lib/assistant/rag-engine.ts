@@ -254,7 +254,7 @@ function scoreChunk(queryTokens: string[], rawQuery: string, chunk: KnowledgeChu
 /**
  * Retrieve Top-K relevant knowledge chunks using RAG Search
  */
-export function retrieveContext(query: string, topK = 3): RAGSearchResult[] {
+export function retrieveContext(query: string, topK = 4): RAGSearchResult[] {
   const rawQuery = query.trim();
   const queryTokens = tokenize(rawQuery);
 
@@ -270,20 +270,108 @@ export function retrieveContext(query: string, topK = 3): RAGSearchResult[] {
   // Sort descending by relevance score
   scored.sort((a, b) => b.score - a.score);
 
-  return scored.slice(0, topK).filter((res) => res.score > 0.4);
+  return scored.slice(0, topK).filter((res) => res.score > 0.35);
+}
+
+/**
+ * Call External LLM (Google Gemini / OpenAI) with RAG Injected Context
+ */
+async function callLLMWithRAGContext(query: string, retrievedContext: string[]): Promise<string | null> {
+  const geminiKey = process.env.GEMINI_API_KEY;
+  const openaiKey = process.env.OPENAI_API_KEY;
+
+  const systemInstruction = `You are the official conversational AI assistant for MindStocs Studio (a software and digital agency based in Sawantwadi, India).
+MindStocs specializes in:
+1. Custom Software Engineering (web apps, APIs, dashboards)
+2. SaaS Product Development (MVP scoping, multi-tenancy, Stripe billing)
+3. Algorithmic Trading Systems (market data feeds, low-latency execution, backtesting)
+4. Performance Marketing (Google/Meta Ads, conversion funnels)
+5. Technical SEO (technical audits, search visibility)
+6. Purpose-Driven Content Creation
+
+MINDSTOCS VERIFIED KNOWLEDGE CONTEXT:
+${retrievedContext.join('\n\n')}
+
+INSTRUCTIONS:
+- Answer the user's question directly, conversationally, and accurately based on the context above.
+- If the user asks something outside MindStocs's domain, answer briefly and politely, then warmly offer help with their digital/software goals.
+- Keep your tone sharp, professional, and helpful. Do NOT make up unsupported guarantees or unrealistic timelines.`;
+
+  // 1. Google Gemini 1.5 Flash (Ultra-fast, High Accuracy)
+  if (geminiKey) {
+    try {
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [
+              {
+                role: 'user',
+                parts: [{ text: `${systemInstruction}\n\nUser Question: ${query}` }],
+              },
+            ],
+            generationConfig: {
+              temperature: 0.35,
+              maxOutputTokens: 600,
+            },
+          }),
+        }
+      );
+      if (response.ok) {
+        const data = await response.json();
+        const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (text) return text.trim();
+      }
+    } catch (err) {
+      console.warn('[RAG LLM] Gemini call encountered an error, falling back to local synthesizer:', err);
+    }
+  }
+
+  // 2. OpenAI GPT-4o-mini
+  if (openaiKey) {
+    try {
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${openaiKey}`,
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o-mini',
+          messages: [
+            { role: 'system', content: systemInstruction },
+            { role: 'user', content: query },
+          ],
+          temperature: 0.35,
+          max_tokens: 600,
+        }),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        const text = data?.choices?.[0]?.message?.content;
+        if (text) return text.trim();
+      }
+    } catch (err) {
+      console.warn('[RAG LLM] OpenAI call encountered an error, falling back to local synthesizer:', err);
+    }
+  }
+
+  return null;
 }
 
 /**
  * Synthesize a RAG Response given user query and retrieved context
  */
-export function generateRAGResponse(query: string): RAGResponse {
+export async function generateRAGResponse(query: string): Promise<RAGResponse> {
   const normalized = query.toLowerCase().trim();
 
   // 1. Common Greeting Catch
   if (/^(hi|hello|hey|greetings|hola|good morning|good afternoon|good evening)\b/.test(normalized)) {
     return {
       answer:
-        "Hello! I am the MindStocs Studio AI Assistant, powered by our live RAG knowledge base. I can assist you with details on our 6 core services (Custom Software, SaaS, Algorithmic Trading, Performance Marketing, Technical SEO, Content Creation), our 7-step delivery process, office location in Sawantwadi, or starting a new project. How can I help you today?",
+        "Hello! I am the MindStocs Studio AI Assistant, powered by our live RAG knowledge engine. I can answer any questions about our 6 core services (Custom Software, SaaS, Algorithmic Trading, Performance Marketing, Technical SEO, Content Creation), our 7-step delivery process, office location in Sawantwadi, or starting a new project. How can I help you today?",
       confidence: 1.0,
       sources: ['MindStocs Knowledge Engine'],
       suggestedActions: [
@@ -303,13 +391,44 @@ export function generateRAGResponse(query: string): RAGResponse {
   }
 
   // 2. Perform RAG Knowledge Retrieval
-  const topResults = retrieveContext(query, 3);
+  const topResults = retrieveContext(query, 4);
 
-  // If no high-confidence knowledge chunks retrieved, return graceful fallback
-  if (topResults.length === 0 || topResults[0].score < 0.6) {
+  const sources = Array.from(new Set(topResults.map((r) => r.chunk.source)));
+  const suggestedActions = Array.from(
+    new Set(topResults.flatMap((r) => r.chunk.suggestedActions))
+  ).slice(0, 5);
+
+  const contextSnippets = topResults.map(
+    (r) => `[Source: ${r.chunk.source}]\n${r.chunk.content}`
+  );
+
+  // 3. Attempt LLM Generation with Injected RAG Context (if GEMINI_API_KEY or OPENAI_API_KEY is configured)
+  const llmGeneratedAnswer = await callLLMWithRAGContext(query, contextSnippets);
+  if (llmGeneratedAnswer) {
+    const primaryChunk = topResults[0]?.chunk;
+    return {
+      answer: llmGeneratedAnswer,
+      confidence: topResults.length > 0 ? Math.min(1.0, topResults[0].score / 4.0) : 0.8,
+      sources: sources.length > 0 ? sources : ['MindStocs Neural LLM'],
+      suggestedActions:
+        suggestedActions.length > 0
+          ? suggestedActions
+          : ['Discuss Software Project', 'Send Project Brief', 'Talk to Team'],
+      cta: primaryChunk?.ctaLink
+        ? {
+            type: primaryChunk.ctaType || 'contact',
+            link: primaryChunk.ctaLink,
+            text: primaryChunk.ctaText || 'Discuss With Team',
+          }
+        : undefined,
+    };
+  }
+
+  // 4. In-Memory RAG Synthesizer (Fallback when no LLM API key is present)
+  if (topResults.length === 0 || topResults[0].score < 0.5) {
     return {
       answer:
-        "I couldn't find a direct verified match in our knowledge base for that inquiry. Our engineering and strategy leads are available to answer your specific questions directly.",
+        "I couldn't find a direct verified match in our knowledge base for that specific inquiry. Our engineering and strategy leads are available to answer your custom requirements directly.",
       confidence: 0.2,
       sources: ['MindStocs Fallback'],
       suggestedActions: [
@@ -329,23 +448,13 @@ export function generateRAGResponse(query: string): RAGResponse {
   const primaryResult = topResults[0];
   const primaryChunk = primaryResult.chunk;
 
-  // Build composite answer from top retrieved chunks
   let synthesizedAnswer = '';
-  const sources = Array.from(new Set(topResults.map((r) => r.chunk.source)));
-  const suggestedActions = Array.from(
-    new Set(topResults.flatMap((r) => r.chunk.suggestedActions))
-  ).slice(0, 5);
-
   if (primaryChunk.category === 'service') {
     synthesizedAnswer = `${primaryChunk.content}\n\nWould you like to discuss requirements for ${primaryChunk.title} or submit a project brief?`;
   } else if (primaryChunk.category === 'project') {
     synthesizedAnswer = `Here is our verified case study for ${primaryChunk.title}:\n\n${primaryChunk.content}`;
   } else if (primaryChunk.category === 'faq') {
     synthesizedAnswer = `${primaryChunk.content.replace(/^Question: .*\nAnswer: /, '')}`;
-  } else if (primaryChunk.category === 'company') {
-    synthesizedAnswer = `${primaryChunk.content}`;
-  } else if (primaryChunk.category === 'process') {
-    synthesizedAnswer = `${primaryChunk.content}`;
   } else {
     synthesizedAnswer = `${primaryChunk.content}`;
   }

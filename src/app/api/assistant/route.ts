@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
     const sanitizedMessage = sanitizeInput(message);
 
     // Execute RAG Knowledge Retrieval & Answer Generation Pipeline
-    const ragResult = generateRAGResponse(sanitizedMessage);
+    const ragResult = await generateRAGResponse(sanitizedMessage);
 
     console.log(`[RAG Assistant Query]: "${sanitizedMessage}" -> Found ${ragResult.sources.length} sources (Confidence: ${(ragResult.confidence * 100).toFixed(0)}%)`);
 

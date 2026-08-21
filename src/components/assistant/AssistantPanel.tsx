@@ -129,43 +129,7 @@ export default function AssistantPanel({ isOpen, onClose }: AssistantPanelProps)
   };
 
   const handleAction = async (actionText: string) => {
-    // 1. Service Discussions
-    const routeMappings: Record<string, string> = {
-      'Custom Software': '/services/software-development',
-      'Discuss Software Development': '/contact?service=software-development',
-      'Discuss Custom Software': '/contact?service=software-development',
-      'Discuss Software Project': '/contact?service=software-development',
-      'SaaS Products': '/services/saas-product-development',
-      'Discuss SaaS Product Development': '/contact?service=saas-product-development',
-      'Discuss SaaS Project': '/contact?service=saas-product-development',
-      'Trading Algorithms': '/services/trading-algorithm-development',
-      'Discuss Trading Algorithm Engineering': '/contact?service=trading-algorithm-development',
-      'Discuss Trading Project': '/contact?service=trading-algorithm-development',
-      'Growth Marketing': '/services/performance-marketing',
-      'Discuss Performance Marketing': '/contact?service=performance-marketing',
-      'Discuss Marketing Project': '/contact?service=performance-marketing',
-      'Technical SEO': '/services/seo',
-      'Discuss Technical SEO & Growth': '/contact?service=seo',
-      'Discuss SEO Project': '/contact?service=seo',
-      'Content Creation': '/services/content-creation',
-      'Discuss Content Creation': '/contact?service=content-creation',
-      'Discuss Content Project': '/contact?service=content-creation',
-      'Send Project Brief': '/contact',
-      'Our Process': '/process',
-      '7-Step Process': '/process',
-      'View All Work': '/work',
-      'Explore Services': '/services',
-      'Client Login': '/login',
-      'Create Account': '/signup',
-      'Access Client Portal': '/portal',
-    };
-
-    if (routeMappings[actionText]) {
-      router.push(routeMappings[actionText]);
-      onClose();
-      return;
-    }
-
+    // Only WhatsApp opens an external window
     if (actionText === 'Talk to the Team (WhatsApp)' || actionText === 'Talk to Team' || actionText === 'Chat on WhatsApp') {
       window.open(company.whatsapp.link, '_blank');
       return;
@@ -185,6 +149,7 @@ export default function AssistantPanel({ isOpen, onClose }: AssistantPanelProps)
       return;
     }
 
+    // Treat any selected action chip as an in-chat conversational query
     addMessage('user', actionText);
     await getResponse(actionText);
   };
