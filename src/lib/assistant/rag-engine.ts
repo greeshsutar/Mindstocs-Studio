@@ -274,18 +274,19 @@ export function retrieveContext(query: string, topK = 4): RAGSearchResult[] {
 }
 
 /**
- * Call External LLM (Google Gemini / OpenAI) with RAG Injected Context
+ * Call External LLM (Groq / Google Gemini / OpenAI) with RAG Injected Context
  */
 async function callLLMWithRAGContext(query: string, retrievedContext: string[]): Promise<string | null> {
+  const groqKey = process.env.GROQ_API_KEY;
   const geminiKey = process.env.GEMINI_API_KEY;
   const openaiKey = process.env.OPENAI_API_KEY;
 
   const systemInstruction = `You are the official conversational AI assistant for MindStocs Studio (a software and digital agency based in Sawantwadi, India).
 MindStocs specializes in:
-1. Custom Software Engineering (web apps, APIs, dashboards)
-2. SaaS Product Development (MVP scoping, multi-tenancy, Stripe billing)
-3. Algorithmic Trading Systems (market data feeds, low-latency execution, backtesting)
-4. Performance Marketing (Google/Meta Ads, conversion funnels)
+1. Custom Software Engineering (web apps, APIs, admin dashboards, databases)
+2. SaaS Product Development (MVP scoping, multi-tenancy, Stripe billing integration)
+3. Algorithmic Trading Systems (market data feeds, low-latency execution, backtesting, strict risk limits)
+4. Performance Marketing (Google & Meta Ads, conversion funnels)
 5. Technical SEO (technical audits, search visibility)
 6. Purpose-Driven Content Creation
 
@@ -294,10 +295,43 @@ ${retrievedContext.join('\n\n')}
 
 INSTRUCTIONS:
 - Answer the user's question directly, conversationally, and accurately based on the context above.
-- If the user asks something outside MindStocs's domain, answer briefly and politely, then warmly offer help with their digital/software goals.
+- If the user asks general or out-of-the-box questions (e.g. general tech, jokes, trivia), answer politely and clearly, then warmly invite them to explore how MindStocs can help their business.
 - Keep your tone sharp, professional, and helpful. Do NOT make up unsupported guarantees or unrealistic timelines.`;
 
-  // 1. Google Gemini 1.5 Flash (Ultra-fast, High Accuracy)
+  // 1. Groq Cloud (Ultra-fast, Llama 3.3 70B - Free tier available)
+  if (groqKey) {
+    try {
+      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${groqKey}`,
+        },
+        body: JSON.stringify({
+          model: 'llama-3.3-70b-versatile',
+          messages: [
+            { role: 'system', content: systemInstruction },
+            { role: 'user', content: query },
+          ],
+          temperature: 0.35,
+          max_tokens: 600,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const text = data?.choices?.[0]?.message?.content;
+        if (text) return text.trim();
+      } else {
+        const errData = await response.json();
+        console.warn('[RAG LLM] Groq API returned error:', errData);
+      }
+    } catch (err) {
+      console.warn('[RAG LLM] Groq API call failed:', err);
+    }
+  }
+
+  // 2. Google Gemini 1.5/2.0 Flash (Free tier available at Google AI Studio)
   if (geminiKey) {
     try {
       const response = await fetch(
@@ -323,13 +357,16 @@ INSTRUCTIONS:
         const data = await response.json();
         const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
         if (text) return text.trim();
+      } else {
+        const errData = await response.json();
+        console.warn('[RAG LLM] Gemini API returned error:', errData);
       }
     } catch (err) {
-      console.warn('[RAG LLM] Gemini call encountered an error, falling back to local synthesizer:', err);
+      console.warn('[RAG LLM] Gemini call failed:', err);
     }
   }
 
-  // 2. OpenAI GPT-4o-mini
+  // 3. OpenAI GPT-4o-mini
   if (openaiKey) {
     try {
       const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -352,9 +389,12 @@ INSTRUCTIONS:
         const data = await response.json();
         const text = data?.choices?.[0]?.message?.content;
         if (text) return text.trim();
+      } else {
+        const errData = await response.json();
+        console.warn('[RAG LLM] OpenAI API returned error (check billing/quota):', errData?.error?.message || errData);
       }
     } catch (err) {
-      console.warn('[RAG LLM] OpenAI call encountered an error, falling back to local synthesizer:', err);
+      console.warn('[RAG LLM] OpenAI call failed:', err);
     }
   }
 
