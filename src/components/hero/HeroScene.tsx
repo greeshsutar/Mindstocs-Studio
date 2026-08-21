@@ -60,8 +60,8 @@ export default function HeroScene({ reducedMotion }: HeroSceneProps) {
           position: 'absolute',
           inset: 0,
           background: isMobile
-            ? 'radial-gradient(circle at 58% 48%, rgba(240, 236, 228, 0.025) 0%, rgba(201, 168, 76, 0.01) 32%, transparent 68%)'
-            : 'radial-gradient(circle at 58% 48%, rgba(240, 236, 228, 0.045) 0%, rgba(201, 168, 76, 0.018) 32%, transparent 68%)',
+            ? 'radial-gradient(circle at 50% 50%, rgba(240, 236, 228, 0.035) 0%, rgba(201, 168, 76, 0.02) 35%, transparent 70%)'
+            : 'radial-gradient(circle at 50% 50%, rgba(240, 236, 228, 0.055) 0%, rgba(201, 168, 76, 0.03) 35%, transparent 70%)',
           pointerEvents: 'none',
           zIndex: -1,
         }}

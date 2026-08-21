@@ -281,7 +281,7 @@ export default function ParticleSphere({
 
   return (
     <group>
-      <points ref={pointsRef} position={[isMobile ? 0 : 1.5, isMobile ? -0.4 : 0, 0]}>
+      <points ref={pointsRef} position={[0, 0, 0]}>
         <bufferGeometry>
           <bufferAttribute
             attach="attributes-position"
