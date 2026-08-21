@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { LogIn, UserPlus, ArrowUpRight, MessageSquare } from 'lucide-react';
 import { mainNavItems, ctaNav } from '@/data/navigation';
 import { company } from '@/data/company';
 import '@/styles/components/header.css';
@@ -59,58 +60,64 @@ export default function Header() {
         <div className="header__inner">
           {/* Logo */}
           <Link href="/" className="header__logo" aria-label="MindStocs Studio — Home">
-            <Logo height={38} />
+            <Logo height={36} />
           </Link>
 
           {/* Desktop Navigation */}
           <nav className="header__nav" aria-label="Main navigation">
             {mainNavItems.map((item) => {
-              const hasDropdown = ['Work', 'Process', 'Insights'].includes(item.label);
+              const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href + '/'));
               return (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`header__nav-link ${
-                    pathname === item.href || pathname.startsWith(item.href + '/')
-                      ? 'header__nav-link--active'
-                      : ''
-                  }`}
+                  className={`header__nav-link ${isActive ? 'header__nav-link--active' : ''}`}
                 >
                   <span>{item.label}</span>
-                  {hasDropdown && (
-                    <svg
-                      className="header__nav-link-chevron"
-                      width="12"
-                      height="12"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="m6 9 6 6 6-6" />
-                    </svg>
-                  )}
+                  {isActive && <span className="header__nav-indicator" />}
                 </Link>
               );
             })}
           </nav>
 
-          {/* Desktop Actions */}
+          {/* Desktop Actions & Auth */}
           <div className="header__actions">
-            <Link href="/portal?tab=login" className="header__login-btn">
-              LOG IN
-            </Link>
-            <Link href="/portal?tab=signup" className="header__signup-btn">
-              SIGN UP
-            </Link>
+            <div className="header__auth-group">
+              <Link
+                href="/portal?tab=login"
+                className={`header__auth-btn header__login-btn ${
+                  pathname === '/login' || (pathname === '/portal' && typeof window !== 'undefined' && window.location.search.includes('tab=login'))
+                    ? 'header__auth-btn--active'
+                    : ''
+                }`}
+                title="Client Login"
+              >
+                <LogIn size={14} className="header__auth-icon" />
+                <span>Log In</span>
+              </Link>
+              <Link
+                href="/portal?tab=signup"
+                className={`header__auth-btn header__signup-btn ${
+                  pathname === '/signup' || (pathname === '/portal' && typeof window !== 'undefined' && window.location.search.includes('tab=signup'))
+                    ? 'header__auth-btn--active'
+                    : ''
+                }`}
+                title="Create Account"
+              >
+                <UserPlus size={14} className="header__auth-icon" />
+                <span>Sign Up</span>
+              </Link>
+            </div>
+
+            <div className="header__action-divider" aria-hidden="true" />
+
             <Link href={ctaNav.href} className="header__cta">
-              {ctaNav.label}
+              <span>{ctaNav.label}</span>
+              <ArrowUpRight size={14} className="header__cta-icon" />
             </Link>
           </div>
 
-          {/* Hamburger */}
+          {/* Hamburger Menu Toggle */}
           <button
             className={`header__hamburger ${mobileOpen ? 'header__hamburger--open' : ''}`}
             onClick={() => setMobileOpen(!mobileOpen)}
@@ -125,7 +132,7 @@ export default function Header() {
         </div>
       </header>
 
-      {/* Mobile Navigation Overlay */}
+      {/* Mobile Navigation Drawer */}
       <div
         id="mobile-nav"
         className={`mobile-nav ${mobileOpen ? 'mobile-nav--open' : ''}`}
@@ -133,65 +140,77 @@ export default function Header() {
         aria-modal="true"
         aria-label="Mobile navigation"
       >
-        <nav className="mobile-nav__links" aria-label="Mobile navigation">
-          {mainNavItems.map((item) => (
+        <div className="mobile-nav__backdrop-glow" aria-hidden="true" />
+        
+        <div className="mobile-nav__content">
+          <nav className="mobile-nav__links" aria-label="Mobile navigation links">
+            {mainNavItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`mobile-nav__link ${
+                  pathname === item.href ? 'mobile-nav__link--active' : ''
+                }`}
+                onClick={() => setMobileOpen(false)}
+              >
+                <span>{item.label}</span>
+              </Link>
+            ))}
             <Link
-              key={item.href}
-              href={item.href}
+              href="/contact"
               className={`mobile-nav__link ${
-                pathname === item.href ? 'mobile-nav__link--active' : ''
+                pathname === '/contact' ? 'mobile-nav__link--active' : ''
               }`}
               onClick={() => setMobileOpen(false)}
             >
-              {item.label}
+              <span>Contact</span>
             </Link>
-          ))}
-          <Link
-            href="/contact"
-            className={`mobile-nav__link ${
-              pathname === '/contact' ? 'mobile-nav__link--active' : ''
-            }`}
-            onClick={() => setMobileOpen(false)}
-          >
-            Contact
-          </Link>
-        </nav>
+          </nav>
 
-        {/* Mobile Auth Actions */}
-        <div className="mobile-nav__auth">
+          <div className="mobile-nav__divider" />
+
+          {/* Mobile Auth Actions */}
+          <div className="mobile-nav__auth">
+            <Link
+              href="/portal?tab=login"
+              className="mobile-nav__auth-btn mobile-nav__login-btn"
+              onClick={() => setMobileOpen(false)}
+            >
+              <LogIn size={16} />
+              <span>Log In</span>
+            </Link>
+            <Link
+              href="/portal?tab=signup"
+              className="mobile-nav__auth-btn mobile-nav__signup-btn"
+              onClick={() => setMobileOpen(false)}
+            >
+              <UserPlus size={16} />
+              <span>Sign Up</span>
+            </Link>
+          </div>
+
+          {/* Primary Mobile CTA */}
           <Link
-            href="/portal?tab=login"
-            className="mobile-nav__login-btn"
+            href={ctaNav.href}
+            className="mobile-nav__cta"
             onClick={() => setMobileOpen(false)}
           >
-            LOG IN
+            <span>{ctaNav.label}</span>
+            <ArrowUpRight size={16} />
           </Link>
-          <Link
-            href="/portal?tab=signup"
-            className="mobile-nav__signup-btn"
+
+          {/* WhatsApp Support Link */}
+          <a
+            href={company.whatsapp.link}
+            className="mobile-nav__whatsapp"
+            target="_blank"
+            rel="noopener noreferrer"
             onClick={() => setMobileOpen(false)}
           >
-            SIGN UP
-          </Link>
+            <MessageSquare size={14} />
+            <span>Chat on WhatsApp</span>
+          </a>
         </div>
-
-        <Link
-          href={ctaNav.href}
-          className="mobile-nav__cta"
-          onClick={() => setMobileOpen(false)}
-        >
-          {ctaNav.label}
-        </Link>
-
-        <a
-          href={company.whatsapp.link}
-          className="mobile-nav__whatsapp"
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={() => setMobileOpen(false)}
-        >
-          Chat on WhatsApp
-        </a>
       </div>
     </>
   );
