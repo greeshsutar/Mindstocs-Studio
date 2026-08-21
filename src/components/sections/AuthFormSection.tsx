@@ -1,13 +1,32 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { User, Lock, Mail, Building, Send, CheckCircle2, ArrowRight, AlertCircle, Loader2, KeyRound, RotateCcw } from 'lucide-react';
 import '@/styles/components/auth-form.css';
 
 type FormTab = 'login' | 'signup' | 'inquiry' | 'otp';
 
-export default function AuthFormSection() {
-  const [activeTab, setActiveTab] = useState<FormTab>('login');
+interface AuthFormSectionProps {
+  initialTab?: FormTab;
+}
+
+function AuthFormInner({ initialTab = 'login' }: AuthFormSectionProps) {
+  const searchParams = useSearchParams();
+  const tabParam = searchParams?.get('tab') as FormTab | null;
+
+  const [activeTab, setActiveTab] = useState<FormTab>(() => {
+    if (tabParam && ['login', 'signup', 'inquiry', 'otp'].includes(tabParam)) {
+      return tabParam;
+    }
+    return initialTab;
+  });
+
+  useEffect(() => {
+    if (tabParam && ['login', 'signup', 'inquiry', 'otp'].includes(tabParam)) {
+      setActiveTab(tabParam);
+    }
+  }, [tabParam]);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
@@ -685,5 +704,13 @@ export default function AuthFormSection() {
         </div>
       </div>
     </section>
+  );
+}
+
+export default function AuthFormSection({ initialTab = 'login' }: AuthFormSectionProps) {
+  return (
+    <Suspense fallback={<div style={{ minHeight: '400px' }} />}>
+      <AuthFormInner initialTab={initialTab} />
+    </Suspense>
   );
 }

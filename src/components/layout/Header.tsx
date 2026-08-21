@@ -99,8 +99,11 @@ export default function Header() {
 
           {/* Desktop Actions */}
           <div className="header__actions">
-            <Link href="/portal" className="header__login-btn">
-              CLIENT PORTAL
+            <Link href="/portal?tab=login" className="header__login-btn">
+              LOG IN
+            </Link>
+            <Link href="/portal?tab=signup" className="header__signup-btn">
+              SIGN UP
             </Link>
             <Link href={ctaNav.href} className="header__cta">
               {ctaNav.label}
@@ -153,6 +156,24 @@ export default function Header() {
             Contact
           </Link>
         </nav>
+
+        {/* Mobile Auth Actions */}
+        <div className="mobile-nav__auth">
+          <Link
+            href="/portal?tab=login"
+            className="mobile-nav__login-btn"
+            onClick={() => setMobileOpen(false)}
+          >
+            LOG IN
+          </Link>
+          <Link
+            href="/portal?tab=signup"
+            className="mobile-nav__signup-btn"
+            onClick={() => setMobileOpen(false)}
+          >
+            SIGN UP
+          </Link>
+        </div>
 
         <Link
           href={ctaNav.href}

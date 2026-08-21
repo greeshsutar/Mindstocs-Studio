@@ -129,6 +129,29 @@
   background-color: rgba(201, 168, 76, 0.08);
 }
 
+.header__signup-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 14px;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-wide);
+  color: var(--color-gold);
+  background: rgba(201, 168, 76, 0.08);
+  border: 1px solid rgba(201, 168, 76, 0.35);
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.header__signup-btn:hover {
+  background: rgba(201, 168, 76, 0.18);
+  border-color: var(--color-gold);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
 /* CTA */
 .header__cta {
   display: inline-flex;
@@ -232,8 +255,58 @@
   color: var(--color-gold);
 }
 
+.mobile-nav__auth {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-6);
+}
+
+.mobile-nav__login-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-wide);
+  color: var(--color-text-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+.mobile-nav__login-btn:hover {
+  color: var(--color-gold);
+  border-color: rgba(201, 168, 76, 0.5);
+  background-color: rgba(201, 168, 76, 0.08);
+}
+
+.mobile-nav__signup-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-wide);
+  color: var(--color-gold);
+  border: 1px solid rgba(201, 168, 76, 0.4);
+  background-color: rgba(201, 168, 76, 0.1);
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+.mobile-nav__signup-btn:hover {
+  background-color: rgba(201, 168, 76, 0.2);
+  border-color: var(--color-gold);
+  color: #fff;
+}
+
 .mobile-nav__cta {
-  margin-top: var(--space-8);
+  margin-top: var(--space-4);
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);

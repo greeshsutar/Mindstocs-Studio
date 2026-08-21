@@ -51,6 +51,11 @@ export default function Footer() {
                   Contact
                 </Link>
               </li>
+              <li>
+                <Link href="/portal" className="footer__link">
+                  Client Portal
+                </Link>
+              </li>
             </ul>
           </div>
 
