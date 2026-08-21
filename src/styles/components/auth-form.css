@@ -203,6 +203,18 @@
   margin-top: var(--space-2);
   width: 100%;
   justify-content: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  transition: all 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.auth-submit-btn .animate-spin {
+  animation: spin 0.8s linear infinite !important;
+  display: inline-block !important;
+  transform-origin: 50% 50% !important;
+  flex-shrink: 0;
 }
 
 .auth-footer-text {
