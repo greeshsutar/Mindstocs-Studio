@@ -298,36 +298,39 @@ INSTRUCTIONS:
 - If the user asks general or out-of-the-box questions (e.g. general tech, jokes, trivia), answer politely and clearly, then warmly invite them to explore how MindStocs can help their business.
 - Keep your tone sharp, professional, and helpful. Do NOT make up unsupported guarantees or unrealistic timelines.`;
 
-  // 1. Groq Cloud (Ultra-fast, Llama 3.3 70B - Free tier available)
+  // 1. Groq Cloud (Ultra-fast, High IQ LLM)
   if (groqKey) {
-    try {
-      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${groqKey}`,
-        },
-        body: JSON.stringify({
-          model: 'llama-3.3-70b-versatile',
-          messages: [
-            { role: 'system', content: systemInstruction },
-            { role: 'user', content: query },
-          ],
-          temperature: 0.35,
-          max_tokens: 600,
-        }),
-      });
+    const groqModels = ['openai/gpt-oss-120b', 'openai/gpt-oss-20b', 'qwen/qwen3.6-27b', 'groq/compound-mini'];
+    for (const model of groqModels) {
+      try {
+        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${groqKey}`,
+          },
+          body: JSON.stringify({
+            model,
+            messages: [
+              { role: 'system', content: systemInstruction },
+              { role: 'user', content: query },
+            ],
+            temperature: 0.35,
+            max_tokens: 600,
+          }),
+        });
 
-      if (response.ok) {
-        const data = await response.json();
-        const text = data?.choices?.[0]?.message?.content;
-        if (text) return text.trim();
-      } else {
-        const errData = await response.json();
-        console.warn('[RAG LLM] Groq API returned error:', errData);
+        if (response.ok) {
+          const data = await response.json();
+          const text = data?.choices?.[0]?.message?.content;
+          if (text) return text.trim();
+        } else {
+          const errData = await response.json();
+          console.warn(`[RAG LLM] Groq API (${model}) error:`, errData);
+        }
+      } catch (err) {
+        console.warn(`[RAG LLM] Groq API (${model}) failed:`, err);
       }
-    } catch (err) {
-      console.warn('[RAG LLM] Groq API call failed:', err);
     }
   }
 
