@@ -392,11 +392,15 @@
 .assistant-messages {
   flex: 1;
   padding: 16px 18px;
-  overflow-y: auto;
+  overflow-y: auto !important;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
   gap: 14px;
   scroll-behavior: smooth;
+  overscroll-behavior: contain !important;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
   position: relative;
   z-index: 1;
 }

@@ -115,11 +115,18 @@ export default function AssistantPanel({ isOpen, onClose }: AssistantPanelProps)
   const [suggestedActions, setSuggestedActions] = useState<string[]>(INITIAL_QUICK_ACTIONS);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Auto-scroll to bottom
   const scrollToBottom = () => {
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTo({
+        top: messagesContainerRef.current.scrollHeight,
+        behavior: 'smooth',
+      });
+    }
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
@@ -130,7 +137,10 @@ export default function AssistantPanel({ isOpen, onClose }: AssistantPanelProps)
   // Focus input when opened
   useEffect(() => {
     if (isOpen) {
-      setTimeout(() => inputRef.current?.focus(), 250);
+      setTimeout(() => {
+        inputRef.current?.focus();
+        scrollToBottom();
+      }, 250);
     }
   }, [isOpen]);
 
@@ -265,6 +275,7 @@ export default function AssistantPanel({ isOpen, onClose }: AssistantPanelProps)
             role="dialog"
             aria-modal="true"
             aria-label="MindStocs RAG Assistant Chat"
+            data-lenis-prevent="true"
           >
             {/* Ambient Background Aura */}
             <div className="assistant-panel__ambient-glow" />
@@ -317,7 +328,13 @@ export default function AssistantPanel({ isOpen, onClose }: AssistantPanelProps)
             </div>
 
             {/* Messages Area */}
-            <div className="assistant-messages">
+            <div
+              className="assistant-messages"
+              ref={messagesContainerRef}
+              data-lenis-prevent="true"
+              onWheel={(e) => e.stopPropagation()}
+              onTouchMove={(e) => e.stopPropagation()}
+            >
               {messages.map((msg) => (
                 <motion.div
                   key={msg.id}
@@ -393,7 +410,11 @@ export default function AssistantPanel({ isOpen, onClose }: AssistantPanelProps)
 
             {/* Suggested Actions Grid */}
             {suggestedActions.length > 0 && (
-              <div className="assistant-actions-container">
+              <div
+                className="assistant-actions-container"
+                data-lenis-prevent="true"
+                onWheel={(e) => e.stopPropagation()}
+              >
                 <div className="assistant-actions-label">Suggested Inquiries</div>
                 <div className="assistant-actions">
                   {suggestedActions.map((action) => {
