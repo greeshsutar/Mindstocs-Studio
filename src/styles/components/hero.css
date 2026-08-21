@@ -1,5 +1,5 @@
 /* ============================================================
-   HERO SECTION
+   MINDSTOCS STUDIO — LUXURY HERO SECTION & TITLES
    ============================================================ */
 
 .hero {
@@ -17,8 +17,8 @@
   position: relative;
   z-index: 2;
   width: 100%;
-  padding-top: calc(var(--nav-height) + var(--space-8));
-  padding-bottom: var(--space-8);
+  padding-top: calc(var(--nav-height, 72px) + var(--space-8, 32px));
+  padding-bottom: var(--space-10, 40px);
   pointer-events: none;
   display: flex;
   align-items: center;
@@ -34,7 +34,7 @@
 }
 
 .hero-overlay__content {
-  max-width: 820px;
+  max-width: 960px;
   margin-inline: auto;
   text-align: center;
   display: flex;
@@ -42,51 +42,199 @@
   align-items: center;
 }
 
-.hero-overlay__eyebrow {
-  margin-bottom: var(--space-3);
+/* ---- Eyebrow Pill Badge ---- */
+.hero-overlay__badge {
   display: inline-flex;
   align-items: center;
-  animation: fadeInDown 700ms cubic-bezier(0.16, 1, 0.3, 1) 200ms both;
-}
-
-.hero-overlay__label {
-  margin-bottom: var(--space-5);
-  display: block;
+  gap: 8px;
+  padding: 6px 16px;
+  background: rgba(201, 168, 76, 0.08);
+  border: 1px solid rgba(201, 168, 76, 0.28);
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 700;
   letter-spacing: 0.12em;
-  animation: fadeInDown 700ms cubic-bezier(0.16, 1, 0.3, 1) 300ms both;
+  text-transform: uppercase;
+  color: #ebd283;
+  margin-bottom: 24px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 0 20px -5px rgba(201, 168, 76, 0.3);
+  animation: fadeInDown 700ms cubic-bezier(0.16, 1, 0.3, 1) 150ms both;
 }
 
+.hero-overlay__badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 8px #22c55e;
+  animation: pulseDot 2s ease-in-out infinite;
+}
+
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+.hero-overlay__badge-icon {
+  color: var(--color-gold, #c9a84c);
+}
+
+/* ---- Kinetic Luxury Hero Title ---- */
 .hero-overlay__title {
-  margin-bottom: var(--space-5);
-  max-width: 720px;
-  margin-inline: auto;
-  text-shadow: 0 4px 35px rgba(0, 0, 0, 0.95), 0 0 50px rgba(201, 168, 76, 0.2);
-  animation: fadeInUp 850ms cubic-bezier(0.16, 1, 0.3, 1) 400ms both;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-family: var(--font-heading, inherit);
+  font-weight: 900;
+  text-align: center;
+  margin-bottom: 24px;
+  animation: fadeInUp 850ms cubic-bezier(0.16, 1, 0.3, 1) 300ms both;
 }
 
-.hero-overlay__description {
-  font-size: var(--font-size-lg);
-  color: var(--color-text-secondary);
-  line-height: var(--line-height-body);
-  margin-bottom: var(--space-8);
-  max-width: 620px;
-  margin-inline: auto;
+.hero-title__top {
+  display: block;
+  font-size: clamp(2rem, 5.5vw, 4.25rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  color: #f3f4f6;
+  text-shadow: 0 4px 30px rgba(0, 0, 0, 0.9);
+}
+
+.hero-title__gradient {
+  display: block;
+  font-size: clamp(2.5rem, 7vw, 5.25rem);
+  font-weight: 950;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  background: linear-gradient(
+    135deg,
+    #ffffff 0%,
+    #fef9ee 15%,
+    #f5de9c 35%,
+    #d4b85c 55%,
+    #c9a84c 75%,
+    #ffd700 90%,
+    #ffffff 100%
+  );
+  background-size: 250% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: goldTitleShimmer 5s ease-in-out infinite alternate;
+  filter: drop-shadow(0 0 35px rgba(201, 168, 76, 0.45));
+}
+
+@keyframes goldTitleShimmer {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+
+.hero-title__sub {
+  display: block;
+  font-size: clamp(1.1rem, 2.8vw, 2.15rem);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  color: #9ca3af;
+  margin-top: 4px;
   text-shadow: 0 2px 20px rgba(0, 0, 0, 0.95);
-  animation: fadeInUp 850ms cubic-bezier(0.16, 1, 0.3, 1) 700ms both;
 }
 
+/* ---- Description ---- */
+.hero-overlay__description {
+  font-size: clamp(1rem, 1.3vw, 1.15rem);
+  color: #d1d5db;
+  line-height: 1.65;
+  margin-bottom: 32px;
+  max-width: 680px;
+  margin-inline: auto;
+  text-shadow: 0 2px 15px rgba(0, 0, 0, 0.9);
+  animation: fadeInUp 850ms cubic-bezier(0.16, 1, 0.3, 1) 500ms both;
+}
+
+/* ---- CTA Action Buttons ---- */
 .hero-overlay__actions {
   display: flex;
-  gap: var(--space-4);
+  gap: 16px;
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
-  animation: fadeInUp 850ms cubic-bezier(0.16, 1, 0.3, 1) 900ms both;
+  margin-bottom: 36px;
+  animation: fadeInUp 850ms cubic-bezier(0.16, 1, 0.3, 1) 650ms both;
 }
 
+.hero-btn-start {
+  padding: 13px 28px !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.06em !important;
+  border-radius: 10px !important;
+  box-shadow: 0 6px 25px rgba(201, 168, 76, 0.4) !important;
+  transition: all 250ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
 
+.hero-btn-start:hover {
+  transform: translateY(-2px) scale(1.02) !important;
+  box-shadow: 0 10px 30px rgba(201, 168, 76, 0.55) !important;
+}
 
+.hero-btn-services {
+  padding: 13px 26px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.04em !important;
+  border-radius: 10px !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(8px) !important;
+}
 
+.hero-btn-services:hover {
+  border-color: rgba(201, 168, 76, 0.5) !important;
+  background: rgba(201, 168, 76, 0.1) !important;
+  color: #ffffff !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), 0 0 15px rgba(201, 168, 76, 0.2) !important;
+}
+
+/* ---- Stats / Capabilities Pill Strip ---- */
+.hero-overlay__stats-strip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  animation: fadeInUp 850ms cubic-bezier(0.16, 1, 0.3, 1) 800ms both;
+}
+
+.hero-stat-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #9ca3af;
+  backdrop-filter: blur(10px);
+  transition: all 200ms ease;
+}
+
+.hero-stat-pill:hover {
+  color: #ffffff;
+  border-color: rgba(201, 168, 76, 0.4);
+  background: rgba(201, 168, 76, 0.08);
+  transform: translateY(-1px);
+}
+
+.hero-stat-icon {
+  color: var(--color-gold, #c9a84c);
+}
 
 /* ---- Ambient Hero Background ---- */
 .hero-fallback {
@@ -107,7 +255,7 @@
 .hero-fallback__glow--1 {
   width: 650px;
   height: 650px;
-  background: radial-gradient(circle, rgba(201, 168, 76, 0.12) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(201, 168, 76, 0.14) 0%, transparent 70%);
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -116,12 +264,11 @@
 .hero-fallback__glow--2 {
   width: 450px;
   height: 450px;
-  background: radial-gradient(circle, rgba(201, 168, 76, 0.06) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(201, 168, 76, 0.08) 0%, transparent 70%);
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
 }
-
 
 /* Responsive */
 @media (max-width: 768px) {
@@ -131,29 +278,22 @@
   }
 
   .hero-overlay {
-    padding-top: calc(var(--nav-height) + var(--space-10));
-  }
-
-  .hero-overlay__title {
-    font-size: clamp(1.75rem, 7vw, 2.5rem);
-  }
-
-  .hero-overlay__description {
-    font-size: var(--font-size-base);
+    padding-top: calc(var(--nav-height, 72px) + var(--space-10, 40px));
   }
 
   .hero-overlay__actions {
     flex-direction: column;
+    width: 100%;
+    max-width: 320px;
   }
 
-  .btn {
+  .hero-btn-start,
+  .hero-btn-services {
     width: 100%;
     justify-content: center;
   }
-}
 
-@media (max-width: 480px) {
-  .hero-overlay__content {
-    padding-right: 0;
+  .hero-overlay__stats-strip {
+    gap: 8px;
   }
 }
