@@ -85,10 +85,12 @@ export const AuthService = {
     // Activate user account
     const verifiedUser = await UserModel.markVerified(normalizedEmail);
 
-    // Send Welcome Email
-    MailService.sendWelcomeEmail(verifiedUser.email, verifiedUser.name).catch((err) => {
+    // Send Welcome Email (properly awaited to ensure SMTP dispatch completes before HTTP response)
+    try {
+      await MailService.sendWelcomeEmail(verifiedUser.email, verifiedUser.name);
+    } catch (err) {
       console.error('[AuthService] Failed to send welcome email:', err);
-    });
+    }
 
     // Generate 1-hour JWT Session Token
     const token = this.generateToken(verifiedUser);
@@ -247,10 +249,12 @@ export const AuthService = {
     const passwordHash = await this.hashPassword(data.newPassword);
     await UserModel.updatePassword(normalizedEmail, passwordHash);
 
-    // Send confirmation email
-    MailService.sendPasswordResetSuccessEmail(normalizedEmail, user.name).catch((err) => {
+    // Send confirmation email (properly awaited)
+    try {
+      await MailService.sendPasswordResetSuccessEmail(normalizedEmail, user.name);
+    } catch (err) {
       console.error('[AuthService] Failed to send password reset confirmation email:', err);
-    });
+    }
 
     return {
       success: true,
